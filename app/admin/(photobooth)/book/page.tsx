@@ -325,7 +325,7 @@ export default function BookingHero() {
 
           {/* Right Column - Booking Summary Card */}
           <div className="lg:col-span-2">
-            <Card className="sticky top-24 shadow-xl border-0">
+            <Card className="top-24 shadow-xl border-0">
               <CardHeader className="rounded-t-xl">
                 <CardTitle className="text-2xl font-bold text-gray-500">Standard Package</CardTitle>
                 <div className="text-sm pt-3">
@@ -414,14 +414,14 @@ export default function BookingHero() {
 
                 <div className="flex justify-between items-center">
                   <span className="text-lg font-semibold text-gray-700">Total</span>
-                  <span className="text-2xl font-bold text-blue-600">${totalPrice}</span>
+                  <span className="text-2xl font-bold">${totalPrice}</span>
                 </div>
 
                 <div className="space-y-2">
                   <Button
                     disabled={!isMounted || !isFormValid || isBooking}
                     onClick={() => router.push("/admin/add-ons")}
-                    className="w-full font-semibold hover:bg-blue-700 transition-all duration-200 rounded-xl py-6"
+                    className="w-full font-semibold hover:bg-blue-700 transition-all duration-200 rounded-xl py-6 cursor-pointer"
                   >
                     {isBooking ? (
                       <>

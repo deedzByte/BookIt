@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, MapPin, Award, Camera, Sparkles, Check } from "lucide-react";
+import { Star, MapPin, Award, Camera, Sparkles, Check, CheckCircle2 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa6";
 import { types } from "util";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
@@ -171,9 +171,9 @@ export default function ProviderProfile() {
                       key={feature}
                       className="flex items-center gap-3 text-sm text-neutral-600"
                     >
-                      <div className="rounded-full bg-green-100 p-1">
-                        <Check className="size-3 text-green-600" />
-                      </div>
+
+                        <CheckCircle2 className="w-4 h-4 text-cyan-600 shrink-0" />
+
 
                       {feature}
                     </li>
@@ -181,7 +181,7 @@ export default function ProviderProfile() {
                 </ul>
               </div>
 
-              <div className="rounded-xl bg-neutral-100 p-3">
+              <div className="rounded-xl bg-neutral-100 p-3 mt-2">
                 <div className="flex justify-between text-sm">
                   <span>Extra Hour</span>
 
@@ -195,7 +195,7 @@ export default function ProviderProfile() {
             <CardFooter className="p-5 pt-0">
               <Button
                 onClick={() => router.push("/admin/book")}
-                className={`h-11 w-full rounded-xl font-semibold ${
+                className={`h-11 w-full rounded-xl font-semibold cursor-pointer ${
                   isPopular
                     ? "bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-700 hover:to-cyan-600"
                     : ""

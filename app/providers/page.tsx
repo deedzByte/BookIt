@@ -13,7 +13,9 @@ import {
   Briefcase,
   Search,
   SlidersHorizontal,
-
+  Navigation,
+  X,
+  ChevronLeft,
 } from "lucide-react";
 import Link from "next/link";
 import {
@@ -45,6 +47,10 @@ import {
 } from "@/components/ui/dialog";
 import React from "react";
 import { Button } from "@/components/ui/button";
+import ProviderMap from "@/components/ProviderMap";
+
+// Import the map component
+
 
 const providers = [
   {
@@ -73,6 +79,8 @@ const providers = [
     experience: "12+ years",
     projects: 567,
     price: 150,
+    latitude: -17.8255,
+    longitude: 31.0338,
   },
   {
     id: 2,
@@ -95,6 +103,8 @@ const providers = [
     experience: "8+ years",
     projects: 342,
     price: 120,
+    latitude: -17.819,
+    longitude: 31.041,
   },
   {
     id: 3,
@@ -117,6 +127,8 @@ const providers = [
     experience: "15+ years",
     projects: 892,
     price: 180,
+    latitude: -17.821,
+    longitude: 31.048,
   },
   {
     id: 4,
@@ -144,6 +156,8 @@ const providers = [
     experience: "10+ years",
     projects: 456,
     price: 200,
+    latitude: -17.831,
+    longitude: 31.038,
   },
   {
     id: 5,
@@ -171,6 +185,8 @@ const providers = [
     experience: "20+ years",
     projects: 1024,
     price: 250,
+    latitude: -17.833,
+    longitude: 31.029,
   },
   {
     id: 6,
@@ -193,6 +209,8 @@ const providers = [
     experience: "6+ years",
     projects: 423,
     price: 90,
+    latitude: -17.815,
+    longitude: 31.045,
   },
   {
     id: 7,
@@ -215,6 +233,8 @@ const providers = [
     experience: "9+ years",
     projects: 567,
     price: 130,
+    latitude: -17.829,
+    longitude: 31.042,
   },
   {
     id: 8,
@@ -237,167 +257,15 @@ const providers = [
     experience: "11+ years",
     projects: 289,
     price: 160,
-  },
-  {
-    id: 9,
-    name: "SecureGuard Security",
-    rating: "4.6",
-    reviews: 145,
-    owner: "Robert",
-    category: "Security Services",
-    location: "Belgravia, Harare",
-    image:
-      "https://images.unsplash.com/photo-1582139329536-e7284fece509?w=400&h=300&fit=crop",
-    avatar:
-      "https://heroui-assets.nyc3.cdn.digitaloceanspaces.com/avatars/indigo.jpg",
-    description:
-      "Comprehensive security solutions including alarm systems, CCTV, and guards.",
-    phone: "+263 77 901 2345",
-    email: "robert@secureguard.co.zw",
-    availability: "Mon-Sun 24/7",
-    services: ["CCTV Installation", "Alarm Systems", "Security Guards", "Access Control"],
-    experience: "14+ years",
-    projects: 734,
-    price: 200,
-  },
-  {
-    id: 10,
-    name: "Happy Paws Pet Care",
-    rating: "4.9",
-    reviews: 167,
-    owner: "Lisa",
-    category: "Pet Services",
-    location: "Avondale, Harare",
-    image:
-      "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=400&h=300&fit=crop",
-    avatar:
-      "https://heroui-assets.nyc3.cdn.digitaloceanspaces.com/avatars/teal.jpg",
-    description:
-      "Pet grooming, boarding, and daycare services with love and care.",
-    phone: "+263 77 012 3456",
-    email: "lisa@happypaws.co.zw",
-    availability: "Mon-Sat 7AM-7PM",
-    services: ["Pet Grooming", "Pet Boarding", "Dog Walking", "Pet Daycare"],
-    experience: "7+ years",
-    projects: 512,
-    price: 85,
-  },
-  {
-    id: 11,
-    name: "FreshBite Catering",
-    rating: "4.7",
-    reviews: 203,
-    owner: "Grace",
-    category: "Catering",
-    location: "Newlands, Harare",
-    image:
-      "https://images.unsplash.com/photo-1555244162-803834f70033?w=400&h=300&fit=crop",
-    avatar:
-      "https://heroui-assets.nyc3.cdn.digitaloceanspaces.com/avatars/rose.jpg",
-    description:
-      "Delicious catering for weddings, corporate events, and private parties.",
-    phone: "+263 77 123 4568",
-    email: "grace@freshbite.co.zw",
-    availability: "Mon-Sat 8AM-8PM",
-    services: ["Event Catering", "Wedding Catering", "Corporate Catering", "Private Parties"],
-    experience: "10+ years",
-    projects: 678,
-    price: 180,
-  },
-  {
-    id: 12,
-    name: "Precision Auto Body",
-    rating: "4.6",
-    reviews: 89,
-    owner: "James",
-    category: "Vehicle Repairs",
-    location: "Highlands, Harare",
-    image:
-      "https://images.unsplash.com/photo-1507136566006-cfc505b114fc?w=400&h=300&fit=crop",
-    avatar:
-      "https://heroui-assets.nyc3.cdn.digitaloceanspaces.com/avatars/cobalt.jpg",
-    description:
-      "Auto body repair, painting, and dent removal services.",
-    phone: "+263 77 234 5679",
-    email: "james@precisionauto.co.zw",
-    availability: "Mon-Fri 7AM-6PM, Sat 8AM-3PM",
-    services: ["Auto Body Repair", "Paint Services", "Dent Removal", "Frame Straightening"],
-    experience: "13+ years",
-    projects: 445,
-    price: 220,
-  },
-  {
-    id: 13,
-    name: "Digital Wave Marketing",
-    rating: "4.8",
-    reviews: 134,
-    owner: "Patricia",
-    category: "Digital Services",
-    location: "CBD, Harare",
-    image:
-      "https://images.unsplash.com/photo-1557838923-2985c318be48?w=400&h=300&fit=crop",
-    avatar:
-      "https://heroui-assets.nyc3.cdn.digitaloceanspaces.com/avatars/violet.jpg",
-    description:
-      "Full-service digital marketing agency specializing in social media and SEO.",
-    phone: "+263 77 345 6780",
-    email: "patricia@digitalwave.co.zw",
-    availability: "Mon-Fri 8AM-5PM",
-    services: ["Social Media Marketing", "SEO", "Content Creation", "PPC Advertising"],
-    experience: "8+ years",
-    projects: 389,
-    price: 190,
-  },
-  {
-    id: 14,
-    name: "MasterCraft Builders",
-    rating: "4.9",
-    reviews: 256,
-    owner: "Thomas",
-    category: "Construction",
-    location: "Borrowdale, Harare",
-    image:
-      "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=400&h=300&fit=crop",
-    avatar:
-      "https://heroui-assets.nyc3.cdn.digitaloceanspaces.com/avatars/forest.jpg",
-    description:
-      "Quality construction, renovations, and home improvement services.",
-    phone: "+263 77 456 7891",
-    email: "thomas@mastercraft.co.zw",
-    availability: "Mon-Fri 6AM-6PM, Sat 7AM-2PM",
-    services: ["House Construction", "Renovations", "Roofing", "Flooring"],
-    experience: "18+ years",
-    projects: 1024,
-    price: 300,
-  },
-  {
-    id: 15,
-    name: "Zen Yoga Studio",
-    rating: "4.7",
-    reviews: 112,
-    owner: "Maya",
-    category: "Health & Wellness",
-    location: "Avondale, Harare",
-    image:
-      "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=300&fit=crop",
-    avatar:
-      "https://heroui-assets.nyc3.cdn.digitaloceanspaces.com/avatars/magenta.jpg",
-    description:
-      "Yoga classes, meditation sessions, and wellness workshops.",
-    phone: "+263 77 567 8902",
-    email: "maya@zenstudio.co.zw",
-    availability: "Mon-Sat 6AM-8PM, Sun 8AM-12PM",
-    services: ["Yoga Classes", "Meditation", "Wellness Workshops", "Private Sessions"],
-    experience: "5+ years",
-    projects: 234,
-    price: 75,
+    latitude: -17.822,
+    longitude: 31.052,
   },
 ];
 
 // Get unique categories
 const allCategories = ["All", ...new Set(providers.map(p => p.category))];
 
-// Get unique locations for command dialog
+// Get unique locations
 const allLocations = [...new Set(providers.map(p => p.location))];
 
 export default function Providers() {
@@ -414,8 +282,12 @@ export default function Providers() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
 
-  const [open, setOpen] = React.useState(false);
+  // Location dialog state
+  const [locationDialogOpen, setLocationDialogOpen] = useState(false);
   const [locationSearch, setLocationSearch] = useState("");
+  
+  // Map dialog state
+  const [mapDialogOpen, setMapDialogOpen] = useState(false);
   
   const handleProviderClick = (provider: any) => {
     setSelectedProvider(provider);
@@ -464,7 +336,6 @@ export default function Providers() {
   const filteredProviders = useMemo(() => {
     let filtered = providers;
 
-    // Search filter
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase().trim();
       filtered = filtered.filter(provider =>
@@ -475,7 +346,6 @@ export default function Providers() {
       );
     }
 
-    // Location filter
     if (locationQuery.trim()) {
       const query = locationQuery.toLowerCase().trim();
       filtered = filtered.filter(provider =>
@@ -483,14 +353,12 @@ export default function Providers() {
       );
     }
 
-    // Category filter
     if (selectedCategory !== "All") {
       filtered = filtered.filter(provider =>
         provider.category === selectedCategory
       );
     }
 
-    // Rating filter
     if (selectedRating !== "All") {
       const minRating = parseFloat(selectedRating);
       filtered = filtered.filter(provider =>
@@ -498,12 +366,10 @@ export default function Providers() {
       );
     }
 
-    // Price range filter
     filtered = filtered.filter(provider =>
       provider.price >= priceRange[0] && provider.price <= priceRange[1]
     );
 
-    // Availability filter
     if (isAvailableNow) {
       filtered = filtered.filter(provider =>
         provider.availability.includes("Mon-Sat") ||
@@ -511,7 +377,6 @@ export default function Providers() {
       );
     }
 
-    // Category group filters (checkbox filters)
     if (selectedFilters.length > 0) {
       filtered = filtered.filter(provider =>
         selectedFilters.some(filter =>
@@ -524,7 +389,6 @@ export default function Providers() {
     return filtered;
   }, [searchQuery, locationQuery, selectedCategory, selectedRating, priceRange, selectedFilters, isAvailableNow]);
 
-  // Pagination logic
   const totalPages = Math.ceil(filteredProviders.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -546,7 +410,6 @@ export default function Providers() {
     setCurrentPage(1);
   };
 
-  // Filter locations based on search
   const filteredLocations = allLocations.filter(location =>
     location.toLowerCase().includes(locationSearch.toLowerCase())
   );
@@ -570,7 +433,7 @@ export default function Providers() {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <Input
               type="text"
-              placeholder="Search Service / Provider e.g. Plumbing, cleaning, Fuser Tech"
+              placeholder="Search Service / Provider e.g. Plumbing, cleaning"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 pr-4 py-5 bg-white border-gray-200 shadow-sm hover:shadow-md transition-shadow rounded-xl"
@@ -582,52 +445,126 @@ export default function Providers() {
               type="text"
               placeholder="Search By Location"
               value={locationQuery}
-              onClick={() => setOpen(true)}
+              onClick={() => setLocationDialogOpen(true)}
               onChange={(e) => setLocationQuery(e.target.value)}
               className="pl-10 pr-4 py-5 bg-white border-gray-200 shadow-sm hover:shadow-md transition-shadow rounded-xl cursor-pointer"
             />
           </div>
         </div>
 
-        {/* Location Dialog - Using simple Dialog instead of CommandDialog */}
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Search Location</DialogTitle>
+        {/* Location Search Dialog - Full Screen */}
+        <Dialog open={locationDialogOpen} onOpenChange={setLocationDialogOpen}>
+          <DialogContent className="max-w-[100vw] w-[100vw] h-[100vh] max-h-[100vh] p-0 m-0 rounded-none bg-white">
+            <DialogHeader className="sticky top-0 z-50 bg-white border-b border-gray-200 px-4 py-4">
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setLocationDialogOpen(false)}
+                  className="hover:bg-gray-100"
+                >
+                  <ChevronLeft className="w-6 h-6" />
+                </Button>
+                <div className="flex-1 relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <Input
+                    placeholder="Search for a location..."
+                    value={locationSearch}
+                    onChange={(e) => setLocationSearch(e.target.value)}
+                    className="pl-10 pr-4 py-6 text-base bg-gray-50 border-0 focus-visible:ring-1"
+                    autoFocus
+                  />
+                </div>
+                <Button
+                  onClick={() => {
+                    setMapDialogOpen(true);
+                    setLocationDialogOpen(false);
+                  }}
+                  className="bg-sky-500 hover:bg-sky-600 text-white px-6"
+                >
+                  <Navigation className="w-4 h-4 mr-2" />
+                  Map View
+                </Button>
+              </div>
             </DialogHeader>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input
-                placeholder="Type location..."
-                value={locationSearch}
-                onChange={(e) => setLocationSearch(e.target.value)}
-                className="pl-10"
-                autoFocus
-              />
-            </div>
-            <div className="max-h-[300px] overflow-y-auto mt-4">
+
+            <div className="h-[calc(100vh-80px)] overflow-y-auto p-4">
               {filteredLocations.length > 0 ? (
-                <div className="space-y-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {filteredLocations.map((location) => (
                     <Button
                       key={location}
                       onClick={() => {
                         setLocationQuery(location);
                         setLocationSearch("");
-                        setOpen(false);
+                        setLocationDialogOpen(false);
                       }}
-                      className="w-full text-left px-3 py-2 rounded-md text-primary hover:text-white/80 bg-gray-200 flex items-center gap-2"
+                      className="w-full justify-start px-4 py-6 h-auto bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-xl border border-gray-100"
                     >
-                      <MapPin className="w-4 h-4 text-gray-400" />
-                      <span>{location}</span>
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-full bg-sky-100 flex items-center justify-center flex-shrink-0">
+                          <MapPin className="w-6 h-6 text-sky-500" />
+                        </div>
+                        <div className="text-left">
+                          <p className="font-semibold text-base">{location}</p>
+                          <p className="text-sm text-gray-500">
+                            {providers.filter(p => p.location === location).length} providers available
+                          </p>
+                        </div>
+                      </div>
                     </Button>
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8 text-gray-500">
-                  No locations found
+                <div className="flex flex-col items-center justify-center h-full text-gray-500">
+                  <MapPin className="w-20 h-20 text-gray-300 mb-4" />
+                  <p className="text-xl font-medium">No locations found</p>
+                  <p className="text-sm">Try searching for a different area</p>
                 </div>
               )}
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Full Screen Map Dialog */}
+        <Dialog open={mapDialogOpen} onOpenChange={setMapDialogOpen}>
+          <DialogContent className="max-w-[100vw] w-[100vw] h-[100vh] max-h-[100vh] p-0 m-0 rounded-none bg-black">
+            <DialogHeader className="absolute top-0 left-0 right-0 z-50 bg-gradient-to-b from-black/70 to-transparent px-4 py-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      setMapDialogOpen(false);
+                      setLocationDialogOpen(true);
+                    }}
+                    className="text-white hover:bg-white/20"
+                  >
+                    <ChevronLeft className="w-6 h-6" />
+                  </Button>
+                  <h2 className="text-white text-lg font-semibold">
+                    <MapPin className="w-5 h-5 inline mr-2" />
+                    Find Providers Near You
+                  </h2>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setMapDialogOpen(false)}
+                  className="text-white hover:bg-white/20"
+                >
+                  <X className="w-6 h-6" />
+                </Button>
+              </div>
+            </DialogHeader>
+            <div className="w-full h-full">
+              <ProviderMap
+                showControls={true}
+                showSearch={true}
+                showFilters={true}
+                onClose={() => setMapDialogOpen(false)}
+              />
             </div>
           </DialogContent>
         </Dialog>
@@ -657,7 +594,6 @@ export default function Providers() {
               </CardHeader>
 
               <CardContent className="space-y-6">
-                {/* Search Area */}
                 <div>
                   <h4 className="text-sm font-semibold text-gray-700 mb-2">SEARCH AREA</h4>
                   <div className="space-y-2">
@@ -676,7 +612,6 @@ export default function Providers() {
 
                 <Separator />
 
-                {/* Category */}
                 <div>
                   <h4 className="text-sm font-semibold text-gray-700 mb-2">CATEGORY</h4>
                   <div className="space-y-2 max-h-48 overflow-y-auto pr-2">
@@ -714,7 +649,6 @@ export default function Providers() {
 
                 <Separator />
 
-                {/* Rating Filter */}
                 <div>
                   <h4 className="text-sm font-semibold text-gray-700 mb-2">Rating</h4>
                   <RadioGroup value={selectedRating} onValueChange={setSelectedRating}>
@@ -738,7 +672,6 @@ export default function Providers() {
 
                 <Separator />
 
-                {/* Price Range */}
                 <div>
                   <h4 className="text-sm font-semibold text-gray-700 mb-2">Price Range</h4>
                   <div className="px-1">
@@ -763,7 +696,6 @@ export default function Providers() {
 
                 <Separator />
 
-                {/* Availability */}
                 <div>
                   <h4 className="text-sm font-semibold text-gray-700 mb-2">Availability</h4>
                   <div className="flex items-center gap-2">
@@ -790,9 +722,9 @@ export default function Providers() {
             </Card>
           </div>
 
-          {/* Provider Cards Grid - Image Card Layout */}
+          {/* Provider Cards Grid */}
           <div className="flex-1">
-            <Link href="/provider" className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
               {currentProviders.map((provider) => (
                 <div
                   key={provider.id}
@@ -801,9 +733,9 @@ export default function Providers() {
                       ? "ring-2 ring-blue-600 ring-offset-2"
                       : ""
                   }`}
-                  role="Button"
+                  role="button"
                   tabIndex={0}
-                 
+                  onClick={() => handleProviderClick(provider)}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                       e.preventDefault();
@@ -811,7 +743,6 @@ export default function Providers() {
                     }
                   }}
                 >
-                  {/* Background Image */}
                   <img
                     src={provider.image}
                     alt={provider.name}
@@ -819,10 +750,8 @@ export default function Providers() {
                     className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
 
-                  {/* Gradient Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
 
-                  {/* Availability Badge */}
                   {isAvailableNow && (
                     <div className="absolute top-3 right-3 z-10">
                       <Badge className="bg-green-500 text-white border-0 shadow-lg">
@@ -831,7 +760,6 @@ export default function Providers() {
                     </div>
                   )}
 
-                  {/* Content */}
                   <div className="absolute bottom-0 left-0 z-10 p-4 sm:p-5 md:p-6 w-full">
                     <h3 className="text-lg sm:text-xl font-bold text-white line-clamp-1">
                       {provider.name}
@@ -883,9 +811,8 @@ export default function Providers() {
                   </div>
                 </div>
               ))}
-            </Link>
+            </div>
 
-            {/* Empty State */}
             {filteredProviders.length === 0 && (
               <div className="text-center py-12">
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
@@ -905,7 +832,6 @@ export default function Providers() {
               </div>
             )}
 
-            {/* Pagination */}
             {filteredProviders.length > 0 && totalPages > 1 && (
               <div className="mt-8 flex justify-center">
                 <Pagination>

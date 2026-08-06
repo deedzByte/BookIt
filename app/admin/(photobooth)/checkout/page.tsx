@@ -361,7 +361,7 @@ export default function CheckoutHero() {
                 </div>
                 <Link href="/admin/payment">
                                     <Button 
-                  className="w-full h-12 rounded-full  text-white font-medium hover:bg-gray-400 transition-all duration-200"
+                  className="w-full h-12 rounded-full  text-white font-medium hover:bg-gray-400 transition-all duration-200 cursor-pointer"
                 >
                   Proceed to Payment
                 </Button>

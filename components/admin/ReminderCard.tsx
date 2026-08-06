@@ -38,7 +38,7 @@ const activities = [
 
 export default function ReminderCard() {
   return (
-    <div className="w-96">
+    <div className="w-full max-w-sm">
       {/* Header */}
       <div className="flex items-center justify-between p-4">
         <div>
@@ -86,15 +86,6 @@ export default function ReminderCard() {
             {index !== activities.length - 1 && <Separator />}
           </div>
         ))}
-      </div>
-
-      <Separator />
-
-      {/* Footer */}
-      <div className="p-3">
-        <Button className="w-full rounded-xl" variant="outline">
-          View All Activity
-        </Button>
       </div>
     </div>
   );

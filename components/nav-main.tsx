@@ -47,12 +47,12 @@ export function NavMain({
     </Button>
   </PopoverTrigger>
 
-  <PopoverContent
-    align="end"
-    className="w-96 p-0 rounded-2xl"
-  >
-    <ReminderCard />
-  </PopoverContent>
+<PopoverContent
+  align="end"
+  className="w-[calc(100vw-2rem)] max-w-sm rounded-2xl p-0 sm:w-96"
+>
+  <ReminderCard />
+</PopoverContent>
 </Popover>
           </SidebarMenuItem>
         </SidebarMenu>

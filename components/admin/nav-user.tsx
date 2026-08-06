@@ -21,25 +21,30 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { EllipsisVerticalIcon, CircleUserRoundIcon, CreditCardIcon, BellIcon, LogOutIcon, KeyIcon, KeyRound, CreditCard } from "lucide-react"
-import { Button } from "@base-ui/react"
+import { Button } from "../ui/button"
 
-export default function NavUser({
-  user,
-}: {
-  user: {
-    name: string
-    email: string
-    avatar: string
-  }
-}) {
+
+const user= {
+  name: "Desire",
+  email:"mutenga.desire17@gmail.com",
+  avatar: "/red.jpg"
+}
+export default function NavUser(){
   const { isMobile } = useSidebar()
 
   return (
     <SidebarMenu>
-      <SidebarMenuItem>
+      <SidebarMenuItem >
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button className="flex w-full items-center gap-2 rounded-lg p-2 text-sm hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
+<Button
+  variant="ghost"
+  className="flex w-full items-center gap-2 rounded-lg p-2 justify-start
+             bg-sidebar hover:bg-sidebar-accent
+             text-sidebar-foreground
+             data-[state=open]:bg-sidebar-accent
+             data-[state=open]:text-sidebar-accent-foreground"
+>
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage src="/red.jpg" alt={user.name} />
                 <AvatarFallback className="rounded-lg">DM</AvatarFallback>
@@ -59,7 +64,6 @@ export default function NavUser({
             align="end"
             sideOffset={4}
           >
-            {/* Wrap DropdownMenuLabel in DropdownMenuGroup */}
             <DropdownMenuGroup>
               <DropdownMenuLabel className="p-0 font-normal">
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
@@ -81,25 +85,25 @@ export default function NavUser({
             
             <DropdownMenuGroup>
               <DropdownMenuItem asChild>
-                <Link href="/admin/dashboard/profile" className="flex items-center gap-2">
+                <Link href="/admin/dashboard/profile" className="flex items-center gap-2 cursor-pointer ">
                   <CircleUserRoundIcon className="h-4 w-4" />
                   Profile
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link href="/admin/dashboard/payment" className="flex items-center gap-2">
+                <Link href="/admin/dashboard/payment" className="flex items-center gap-2 cursor-pointer ">
                   <CreditCard className="h-4 w-4" />
                   Payments
                 </Link>
               </DropdownMenuItem>
                           <DropdownMenuItem asChild>
-                <Link href="/admin/dashboard/notifications" className="flex items-center gap-2">
+                <Link href="/admin/dashboard/notifications" className="flex items-center gap-2 cursor-pointer ">
                   <BellIcon className="h-4 w-4" />
                   Notifications
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link href="/admin/dashboard/security" className="flex items-center gap-2">
+                <Link href="/admin/dashboard/security" className="flex items-center gap-2 cursor-pointer ">
                   <KeyRound className="h-4 w-4" />
                    Security
                 </Link>
@@ -107,14 +111,14 @@ export default function NavUser({
             </DropdownMenuGroup>
             
             <DropdownMenuSeparator />
-            
+
             <DropdownMenuGroup>
-              <DropdownMenuItem asChild>
-                <Link href="/logout" className="flex items-center gap-2">
-                  <LogOutIcon className="h-4 w-4" />
-                  Log out
-                </Link>
-              </DropdownMenuItem>
+              <Link href="/logout" className="flex items-center gap-2">
+              <Button variant="destructive" className="w-full flex flex-row cursor-pointer">
+                <LogOutIcon className="h-4 w-4" />
+                Log Out
+              </Button>
+              </Link>
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>

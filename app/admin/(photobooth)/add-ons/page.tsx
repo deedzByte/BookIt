@@ -573,7 +573,7 @@ export default function AddonsHero() {
 
                 <Link href="/admin/prints">
                   <Button
-                    className="w-full h-12 rounded-full hover:bg-gray-400 text-white font-medium transition-all duration-200"
+                    className="w-full h-12 rounded-full hover:bg-gray-400 text-white font-medium transition-all duration-200 cursor-pointer"
                   >
                     Continue to Checkout
                   </Button>

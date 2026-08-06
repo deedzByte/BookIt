@@ -56,7 +56,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarContent className="mt-4">
         <NavMain items={data.navMain} />
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarContent>
 
         

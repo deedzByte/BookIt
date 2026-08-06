@@ -239,9 +239,7 @@ const handleFormInputChange = (
       <Separator />
       <WorkingHours/>
       <Separator />
-      <Payments/>
-      <Separator />
-      <Notifications/>
+
         <div className="flex flex-wrap gap-3 items-center justify-between bg-white rounded-2xl border shadow-sm p-4">
           <div className="flex items-center gap-2">
             <Save className="h-4 w-4 text-muted-foreground" />
