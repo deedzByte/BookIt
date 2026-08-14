@@ -1,5 +1,13 @@
-import MarketplaceHome from "@/components/marketplace/MarketplaceHome"
+import FeaturedProviders from "@/components/FeaturedProviders"
+import Hero from "@/components/Hero"
+import FeaturedPackage from "@/components/HeroFooter"
 
 export default function Page() {
-  return <MarketplaceHome />
+  return (
+    <>
+      <Hero />
+      <FeaturedProviders />
+      <FeaturedPackage />
+    </>
+  )
 }

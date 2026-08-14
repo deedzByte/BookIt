@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import { useState, useEffect } from "react";
+import { useState, useEffect } from "react"
 import {
   CalendarIcon,
   ClockIcon,
@@ -24,21 +24,33 @@ import {
   StarIcon,
   BuildingIcon,
   PlusIcon,
-} from "lucide-react";
-import { format, isToday, isTomorrow, differenceInDays, parseISO } from "date-fns";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Progress } from "@/components/ui/progress";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+} from "lucide-react"
+import {
+  format,
+  isToday,
+  isTomorrow,
+  differenceInDays,
+  parseISO,
+} from "date-fns"
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Separator } from "@/components/ui/separator"
+import { Progress } from "@/components/ui/progress"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "@/components/ui/tooltip"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -46,46 +58,46 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu"
 
 // ============================================================
 // TYPES
 // ============================================================
 interface Booking {
-  id: string;
-  bookingNumber: string;
-  customerName: string;
-  customerEmail: string;
-  customerPhone: string;
-  eventType: string;
-  boothType: string;
-  package: string;
-  eventDate: string;
-  eventTime: string;
-  duration: number;
-  price: number;
-  status: "pending" | "confirmed" | "in-progress" | "completed" | "cancelled";
-  paymentStatus: "paid" | "deposit" | "pending" | "failed";
-  location: string;
-  guests: number;
-  staffAssigned?: string;
-  avatar?: string;
+  id: string
+  bookingNumber: string
+  customerName: string
+  customerEmail: string
+  customerPhone: string
+  eventType: string
+  boothType: string
+  package: string
+  eventDate: string
+  eventTime: string
+  duration: number
+  price: number
+  status: "pending" | "confirmed" | "in-progress" | "completed" | "cancelled"
+  paymentStatus: "paid" | "deposit" | "pending" | "failed"
+  location: string
+  guests: number
+  staffAssigned?: string
+  avatar?: string
 }
 
 interface RevenueData {
-  daily: number;
-  weekly: number;
-  monthly: number;
-  yearly: number;
-  growth: number;
+  daily: number
+  weekly: number
+  monthly: number
+  yearly: number
+  growth: number
 }
 
 interface ActivityItem {
-  id: string;
-  type: "booking" | "payment" | "cancellation" | "reminder";
-  message: string;
-  timestamp: string;
-  user?: string;
+  id: string
+  type: "booking" | "payment" | "cancellation" | "reminder"
+  message: string
+  timestamp: string
+  user?: string
 }
 
 // ============================================================
@@ -110,7 +122,8 @@ const mockBookings: Booking[] = [
     location: "Grand Ballroom, Downtown",
     guests: 120,
     staffAssigned: "Sarah Johnson",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
+    avatar:
+      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
   },
   {
     id: "2",
@@ -130,7 +143,8 @@ const mockBookings: Booking[] = [
     location: "Conference Center, Business District",
     guests: 45,
     staffAssigned: "Mike Chen",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop",
+    avatar:
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop",
   },
   {
     id: "3",
@@ -150,7 +164,8 @@ const mockBookings: Booking[] = [
     location: "Garden Venue, Hillside",
     guests: 35,
     staffAssigned: "Lisa Park",
-    avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop",
+    avatar:
+      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop",
   },
   {
     id: "4",
@@ -170,7 +185,8 @@ const mockBookings: Booking[] = [
     location: "Rooftop Terrace, City Center",
     guests: 85,
     staffAssigned: "David Kim",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop",
+    avatar:
+      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop",
   },
   {
     id: "5",
@@ -190,9 +206,10 @@ const mockBookings: Booking[] = [
     location: "Beachfront Resort, Coastline",
     guests: 150,
     staffAssigned: "Sarah Johnson",
-    avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop",
+    avatar:
+      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop",
   },
-];
+]
 
 const mockRevenue: RevenueData = {
   daily: 2450,
@@ -200,7 +217,7 @@ const mockRevenue: RevenueData = {
   monthly: 32450,
   yearly: 289000,
   growth: 12.5,
-};
+}
 
 const mockActivities: ActivityItem[] = [
   {
@@ -237,7 +254,7 @@ const mockActivities: ActivityItem[] = [
     timestamp: new Date(Date.now() - 21600000).toISOString(),
     user: "Olivia Martinez",
   },
-];
+]
 
 // ============================================================
 // DASHBOARD STATS CARDS
@@ -276,24 +293,35 @@ function StatsCards() {
       trendUp: true,
       color: "bg-amber-500/10 text-amber-700",
     },
-  ];
+  ]
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {stats.map((stat, index) => {
-        const Icon = stat.icon;
+        const Icon = stat.icon
         return (
-          <Card key={index} className="border shadow-sm hover:shadow-md transition-shadow">
+          <Card
+            key={index}
+            className="border shadow-sm transition-shadow hover:shadow-md"
+          >
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
-                  <p className="text-2xl font-bold tracking-tight">{stat.value}</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    {stat.title}
+                  </p>
+                  <p className="text-2xl font-bold tracking-tight">
+                    {stat.value}
+                  </p>
                   <div className="flex items-center gap-1.5">
-                    <span className={cn(
-                      "text-xs font-medium",
-                      stat.trendUp ? "text-emerald-600" : "text-muted-foreground"
-                    )}>
+                    <span
+                      className={cn(
+                        "text-xs font-medium",
+                        stat.trendUp
+                          ? "text-emerald-600"
+                          : "text-muted-foreground"
+                      )}
+                    >
                       {stat.trend}
                     </span>
                   </div>
@@ -304,10 +332,10 @@ function StatsCards() {
               </div>
             </CardContent>
           </Card>
-        );
+        )
       })}
     </div>
-  );
+  )
 }
 
 // ============================================================
@@ -315,44 +343,71 @@ function StatsCards() {
 // ============================================================
 function StatusBadge({ status }: { status: Booking["status"] }) {
   const config = {
-    pending: { label: "Pending", className: "bg-amber-50 text-amber-700 border-amber-200" },
-    confirmed: { label: "Confirmed", className: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-    "in-progress": { label: "In Progress", className: "bg-blue-50 text-blue-700 border-blue-200" },
-    completed: { label: "Completed", className: "bg-teal-50 text-teal-700 border-teal-200" },
-    cancelled: { label: "Cancelled", className: "bg-rose-50 text-rose-700 border-rose-200" },
-  };
+    pending: {
+      label: "Pending",
+      className: "bg-amber-50 text-amber-700 border-amber-200",
+    },
+    confirmed: {
+      label: "Confirmed",
+      className: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    },
+    "in-progress": {
+      label: "In Progress",
+      className: "bg-blue-50 text-blue-700 border-blue-200",
+    },
+    completed: {
+      label: "Completed",
+      className: "bg-teal-50 text-teal-700 border-teal-200",
+    },
+    cancelled: {
+      label: "Cancelled",
+      className: "bg-rose-50 text-rose-700 border-rose-200",
+    },
+  }
 
-  const { label, className } = config[status];
+  const { label, className } = config[status]
 
   return (
-    <Badge variant="outline" className={cn("font-medium text-xs", className)}>
+    <Badge variant="outline" className={cn("text-xs font-medium", className)}>
       {label}
     </Badge>
-  );
+  )
 }
 
 function PaymentStatusBadge({ status }: { status: Booking["paymentStatus"] }) {
   const config = {
-    paid: { label: "Paid", className: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-    deposit: { label: "Deposit", className: "bg-blue-50 text-blue-700 border-blue-200" },
-    pending: { label: "Pending", className: "bg-amber-50 text-amber-700 border-amber-200" },
-    failed: { label: "Failed", className: "bg-rose-50 text-rose-700 border-rose-200" },
-  };
+    paid: {
+      label: "Paid",
+      className: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    },
+    deposit: {
+      label: "Deposit",
+      className: "bg-blue-50 text-blue-700 border-blue-200",
+    },
+    pending: {
+      label: "Pending",
+      className: "bg-amber-50 text-amber-700 border-amber-200",
+    },
+    failed: {
+      label: "Failed",
+      className: "bg-rose-50 text-rose-700 border-rose-200",
+    },
+  }
 
-  const { label, className } = config[status];
+  const { label, className } = config[status]
 
   return (
-    <Badge variant="outline" className={cn("font-medium text-xs", className)}>
+    <Badge variant="outline" className={cn("text-xs font-medium", className)}>
       {label}
     </Badge>
-  );
+  )
 }
 
 // ============================================================
 // TODAY'S SCHEDULE
 // ============================================================
 function TodaysSchedule({ bookings }: { bookings: Booking[] }) {
-  const todayBookings = bookings.filter(b => isToday(parseISO(b.eventDate)));
+  const todayBookings = bookings.filter((b) => isToday(parseISO(b.eventDate)))
 
   return (
     <Card className="border shadow-sm">
@@ -360,7 +415,7 @@ function TodaysSchedule({ bookings }: { bookings: Booking[] }) {
         <div>
           <CardTitle className="flex items-center gap-2">
             <CalendarDaysIcon className="h-5 w-5 text-primary" />
-            Today's Schedule
+            Today&apos;s Schedule
           </CardTitle>
           <CardDescription>
             {todayBookings.length} bookings today
@@ -376,17 +431,19 @@ function TodaysSchedule({ bookings }: { bookings: Booking[] }) {
             {todayBookings.map((booking) => (
               <div
                 key={booking.id}
-                className="flex items-center gap-3 rounded-lg border p-3 hover:bg-muted/50 transition-colors"
+                className="flex items-center gap-3 rounded-lg border p-3 transition-colors hover:bg-muted/50"
               >
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
                   <ClockIcon className="h-5 w-5" />
                 </div>
-                <div className="flex-1 min-w-0">
+                <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <p className="font-medium text-sm truncate">{booking.customerName}</p>
+                    <p className="truncate text-sm font-medium">
+                      {booking.customerName}
+                    </p>
                     <StatusBadge status={booking.status} />
                   </div>
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
+                  <div className="mt-0.5 flex items-center gap-3 text-xs text-muted-foreground">
                     <span>{booking.eventTime}</span>
                     <span>•</span>
                     <span>{booking.boothType}</span>
@@ -395,7 +452,7 @@ function TodaysSchedule({ bookings }: { bookings: Booking[] }) {
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="font-semibold text-sm">${booking.price}</p>
+                  <p className="text-sm font-semibold">${booking.price}</p>
                   <PaymentStatusBadge status={booking.paymentStatus} />
                 </div>
               </div>
@@ -407,12 +464,14 @@ function TodaysSchedule({ bookings }: { bookings: Booking[] }) {
               <CalendarDaysIcon className="h-8 w-8 text-muted-foreground/50" />
             </div>
             <p className="mt-3 font-medium">No bookings today</p>
-            <p className="text-sm text-muted-foreground">Enjoy the day off! 🎉</p>
+            <p className="text-sm text-muted-foreground">
+              Enjoy the day off! 🎉
+            </p>
           </div>
         )}
       </CardContent>
     </Card>
-  );
+  )
 }
 
 // ============================================================
@@ -420,9 +479,12 @@ function TodaysSchedule({ bookings }: { bookings: Booking[] }) {
 // ============================================================
 function UpcomingBookings({ bookings }: { bookings: Booking[] }) {
   const upcoming = bookings
-    .filter(b => !isToday(parseISO(b.eventDate)) && b.status !== "cancelled")
-    .sort((a, b) => new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime())
-    .slice(0, 5);
+    .filter((b) => !isToday(parseISO(b.eventDate)) && b.status !== "cancelled")
+    .sort(
+      (a, b) =>
+        new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime()
+    )
+    .slice(0, 5)
 
   return (
     <Card className="border shadow-sm">
@@ -432,9 +494,7 @@ function UpcomingBookings({ bookings }: { bookings: Booking[] }) {
             <CalendarIcon className="h-5 w-5 text-primary" />
             Upcoming Bookings
           </CardTitle>
-          <CardDescription>
-            Next {upcoming.length} bookings
-          </CardDescription>
+          <CardDescription>Next {upcoming.length} bookings</CardDescription>
         </div>
         <Button variant="ghost" size="sm" className="text-muted-foreground">
           View All <ArrowRightIcon className="ml-1 h-4 w-4" />
@@ -444,46 +504,57 @@ function UpcomingBookings({ bookings }: { bookings: Booking[] }) {
         {upcoming.length > 0 ? (
           <div className="space-y-2">
             {upcoming.map((booking) => {
-              const daysUntil = differenceInDays(parseISO(booking.eventDate), new Date());
+              const daysUntil = differenceInDays(
+                parseISO(booking.eventDate),
+                new Date()
+              )
               return (
                 <div
                   key={booking.id}
-                  className="flex items-center gap-3 rounded-lg p-2 hover:bg-muted/50 transition-colors"
+                  className="flex items-center gap-3 rounded-lg p-2 transition-colors hover:bg-muted/50"
                 >
                   <div className="flex h-12 w-12 flex-col items-center justify-center rounded-lg bg-muted/50">
-                    <span className="text-sm font-bold">{format(parseISO(booking.eventDate), "dd")}</span>
-                    <span className="text-[10px] uppercase text-muted-foreground">
+                    <span className="text-sm font-bold">
+                      {format(parseISO(booking.eventDate), "dd")}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground uppercase">
                       {format(parseISO(booking.eventDate), "MMM")}
                     </span>
                   </div>
-                  <div className="flex-1 min-w-0">
+                  <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <p className="font-medium text-sm truncate">{booking.customerName}</p>
+                      <p className="truncate text-sm font-medium">
+                        {booking.customerName}
+                      </p>
                       <Badge variant="secondary" className="text-[10px]">
-                        {daysUntil === 0 ? "Today" : daysUntil === 1 ? "Tomorrow" : `${daysUntil} days`}
+                        {daysUntil === 0
+                          ? "Today"
+                          : daysUntil === 1
+                            ? "Tomorrow"
+                            : `${daysUntil} days`}
                       </Badge>
                     </div>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
+                    <div className="mt-0.5 flex items-center gap-2 text-xs text-muted-foreground">
                       <span>{booking.boothType}</span>
                       <span>•</span>
                       <span>{booking.eventTime}</span>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-semibold text-sm">${booking.price}</p>
+                    <p className="text-sm font-semibold">${booking.price}</p>
                   </div>
                 </div>
-              );
+              )
             })}
           </div>
         ) : (
-          <div className="text-center py-6 text-muted-foreground">
+          <div className="py-6 text-center text-muted-foreground">
             <p className="text-sm">No upcoming bookings</p>
           </div>
         )}
       </CardContent>
     </Card>
-  );
+  )
 }
 
 // ============================================================
@@ -493,15 +564,15 @@ function RecentActivity({ activities }: { activities: ActivityItem[] }) {
   const getIcon = (type: ActivityItem["type"]) => {
     switch (type) {
       case "booking":
-        return <CheckCircleIcon className="h-4 w-4 text-emerald-500" />;
+        return <CheckCircleIcon className="h-4 w-4 text-emerald-500" />
       case "payment":
-        return <DollarSignIcon className="h-4 w-4 text-blue-500" />;
+        return <DollarSignIcon className="h-4 w-4 text-blue-500" />
       case "cancellation":
-        return <XCircleIcon className="h-4 w-4 text-rose-500" />;
+        return <XCircleIcon className="h-4 w-4 text-rose-500" />
       case "reminder":
-        return <AlertCircleIcon className="h-4 w-4 text-amber-500" />;
+        return <AlertCircleIcon className="h-4 w-4 text-amber-500" />
     }
-  };
+  }
 
   return (
     <Card className="border shadow-sm">
@@ -511,9 +582,7 @@ function RecentActivity({ activities }: { activities: ActivityItem[] }) {
             <SparklesIcon className="h-5 w-5 text-primary" />
             Recent Activity
           </CardTitle>
-          <CardDescription>
-            Latest updates from your bookings
-          </CardDescription>
+          <CardDescription>Latest updates from your bookings</CardDescription>
         </div>
         <Button variant="ghost" size="sm" className="text-muted-foreground">
           View All <ArrowRightIcon className="ml-1 h-4 w-4" />
@@ -524,9 +593,9 @@ function RecentActivity({ activities }: { activities: ActivityItem[] }) {
           {activities.slice(0, 5).map((activity) => (
             <div key={activity.id} className="flex items-start gap-3">
               <div className="mt-0.5">{getIcon(activity.type)}</div>
-              <div className="flex-1 min-w-0">
+              <div className="min-w-0 flex-1">
                 <p className="text-sm">{activity.message}</p>
-                <div className="flex items-center gap-2 mt-0.5">
+                <div className="mt-0.5 flex items-center gap-2">
                   <span className="text-xs text-muted-foreground">
                     {format(parseISO(activity.timestamp), "h:mm a")}
                   </span>
@@ -545,7 +614,7 @@ function RecentActivity({ activities }: { activities: ActivityItem[] }) {
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }
 
 // ============================================================
@@ -555,9 +624,17 @@ function QuickActions() {
   const actions = [
     { label: "New Booking", icon: PlusIcon, color: "bg-primary text-white" },
     { label: "Add Customer", icon: UsersIcon, color: "bg-blue-500 text-white" },
-    { label: "View Calendar", icon: CalendarIcon, color: "bg-purple-500 text-white" },
-    { label: "Generate Report", icon: TrendingUpIcon, color: "bg-emerald-500 text-white" },
-  ];
+    {
+      label: "View Calendar",
+      icon: CalendarIcon,
+      color: "bg-purple-500 text-white",
+    },
+    {
+      label: "Generate Report",
+      icon: TrendingUpIcon,
+      color: "bg-emerald-500 text-white",
+    },
+  ]
 
   return (
     <Card className="border shadow-sm">
@@ -566,21 +643,20 @@ function QuickActions() {
           <StarIcon className="h-5 w-5 text-primary" />
           Quick Actions
         </CardTitle>
-        <CardDescription>
-          Common tasks at your fingertips
-        </CardDescription>
+        <CardDescription>Common tasks at your fingertips</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-2 gap-2">
           {actions.map((action, index) => {
-            const Icon = action.icon;
+            const Icon = action.icon
             return (
               <Button
                 key={index}
                 variant="outline"
                 className={cn(
-                  "h-auto flex-col gap-2 p-4 hover:scale-[1.02] transition-transform",
-                  action.color === "bg-primary text-white" && "border-primary bg-primary text-white hover:bg-primary/90"
+                  "h-auto flex-col gap-2 p-4 transition-transform hover:scale-[1.02]",
+                  action.color === "bg-primary text-white" &&
+                    "border-primary bg-primary text-white hover:bg-primary/90"
                 )}
               >
                 <div className={cn("rounded-lg p-2", action.color)}>
@@ -588,12 +664,12 @@ function QuickActions() {
                 </div>
                 <span className="text-xs font-medium">{action.label}</span>
               </Button>
-            );
+            )
           })}
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }
 
 // ============================================================
@@ -605,9 +681,9 @@ function RevenueOverview() {
     { label: "This Week", value: mockRevenue.weekly },
     { label: "This Month", value: mockRevenue.monthly },
     { label: "This Year", value: mockRevenue.yearly },
-  ];
+  ]
 
-  const maxValue = Math.max(...periods.map(p => p.value));
+  const maxValue = Math.max(...periods.map((p) => p.value))
 
   return (
     <Card className="border shadow-sm">
@@ -618,71 +694,87 @@ function RevenueOverview() {
             Revenue Overview
           </CardTitle>
           <CardDescription>
-            {mockRevenue.growth > 0 ? "+" : ""}{mockRevenue.growth}% growth from last period
+            {mockRevenue.growth > 0 ? "+" : ""}
+            {mockRevenue.growth}% growth from last period
           </CardDescription>
         </div>
-        <Badge variant="outline" className={cn(
-          mockRevenue.growth > 0 ? "text-emerald-600 border-emerald-200" : "text-rose-600 border-rose-200"
-        )}>
-          {mockRevenue.growth > 0 ? <TrendingUpIcon className="h-3 w-3 mr-1" /> : <TrendingDownIcon className="h-3 w-3 mr-1" />}
+        <Badge
+          variant="outline"
+          className={cn(
+            mockRevenue.growth > 0
+              ? "border-emerald-200 text-emerald-600"
+              : "border-rose-200 text-rose-600"
+          )}
+        >
+          {mockRevenue.growth > 0 ? (
+            <TrendingUpIcon className="mr-1 h-3 w-3" />
+          ) : (
+            <TrendingDownIcon className="mr-1 h-3 w-3" />
+          )}
           {mockRevenue.growth}%
         </Badge>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
           {periods.map((period, index) => {
-            const percentage = (period.value / maxValue) * 100;
+            const percentage = (period.value / maxValue) * 100
             return (
               <div key={index} className="space-y-1">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="font-medium text-muted-foreground">{period.label}</span>
-                  <span className="font-semibold">${period.value.toLocaleString()}</span>
+                  <span className="font-medium text-muted-foreground">
+                    {period.label}
+                  </span>
+                  <span className="font-semibold">
+                    ${period.value.toLocaleString()}
+                  </span>
                 </div>
                 <Progress value={percentage} className="h-2" />
               </div>
-            );
+            )
           })}
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }
 
 // ============================================================
 // MAIN DASHBOARD COMPONENT
 // ============================================================
 export default function Dashboard() {
-  const [bookings, setBookings] = useState<Booking[]>(mockBookings);
-  const [activities, setActivities] = useState<ActivityItem[]>(mockActivities);
-  const [greeting, setGreeting] = useState("Good morning");
-  const [time, setTime] = useState("");
+  const [bookings, setBookings] = useState<Booking[]>(mockBookings)
+  const [activities, setActivities] = useState<ActivityItem[]>(mockActivities)
+  const [greeting, setGreeting] = useState("Good morning")
+  const [time, setTime] = useState("")
 
   useEffect(() => {
-    const hour = new Date().getHours();
-    if (hour < 12) setGreeting("Good morning");
-    else if (hour < 17) setGreeting("Good afternoon");
-    else setGreeting("Good evening");
+    queueMicrotask(() => {
+      const now = new Date()
+      const hour = now.getHours()
+      if (hour < 12) setGreeting("Good morning")
+      else if (hour < 17) setGreeting("Good afternoon")
+      else setGreeting("Good evening")
+      setTime(format(now, "h:mm a"))
+    })
+  }, [])
 
-    setTime(format(new Date(), "h:mm a"));
-  }, []);
-
-  const todayBookings = bookings.filter(b => isToday(parseISO(b.eventDate)));
+  const todayBookings = bookings.filter((b) => isToday(parseISO(b.eventDate)))
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100/50 p-4 md:p-6 lg:p-8">
       <div className="mx-auto max-w-7xl space-y-6">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+            <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
               {greeting} 👋
             </h1>
             <p className="text-sm text-muted-foreground">
-              Here's what's happening with your bookings today.
+              Here&apos;s what&apos;s happening with your bookings today.
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground bg-background/80 px-3 py-1.5 rounded-full border">
+            <div className="flex items-center gap-2 rounded-full border bg-background/80 px-3 py-1.5 text-sm text-muted-foreground">
               <ClockIcon className="h-4 w-4" />
               <span>{time}</span>
             </div>
@@ -698,7 +790,7 @@ export default function Dashboard() {
 
         {/* Main Grid */}
         <div className="grid gap-6 lg:grid-cols-3">
-          <div className="lg:col-span-2 space-y-6">
+          <div className="space-y-6 lg:col-span-2">
             {/* Today's Schedule */}
             <TodaysSchedule bookings={bookings} />
 
@@ -720,10 +812,10 @@ export default function Dashboard() {
         </div>
 
         {/* Footer */}
-        <div className="pt-4 text-center text-xs text-muted-foreground border-t">
+        <div className="border-t pt-4 text-center text-xs text-muted-foreground">
           <p>SnapBook Dashboard • {format(new Date(), "EEEE, MMMM d, yyyy")}</p>
         </div>
       </div>
     </div>
-  );
+  )
 }

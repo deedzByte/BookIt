@@ -1,11 +1,11 @@
-"use client";
+"use client"
 
-import { useRouter } from "next/navigation";
-import { useState, useMemo } from "react";
+import { useRouter, useSearchParams } from "next/navigation"
+import { Suspense, useState, useMemo } from "react"
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
+import { Separator } from "@/components/ui/separator"
 
 import {
   Star,
@@ -16,8 +16,8 @@ import {
   Navigation,
   X,
   ChevronLeft,
-} from "lucide-react";
-import Link from "next/link";
+} from "lucide-react"
+import Link from "next/link"
 import {
   Card,
   CardHeader,
@@ -25,11 +25,11 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
-} from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Slider } from "@/components/ui/slider";
+} from "@/components/ui/card"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Input } from "@/components/ui/input"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Slider } from "@/components/ui/slider"
 import {
   Pagination,
   PaginationContent,
@@ -38,21 +38,41 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination";
+} from "@/components/ui/pagination"
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import React from "react";
-import { Button } from "@/components/ui/button";
-import ProviderMap from "@/components/ProviderMap";
+} from "@/components/ui/dialog"
+import React from "react"
+import { Button } from "@/components/ui/button"
+import ProviderMap from "@/components/ProviderMap"
 
 // Import the map component
 
-
 const providers = [
+  {
+    id: 0,
+    name: "Silver Lining Studios",
+    rating: "4.9",
+    reviews: 128,
+    owner: "Tariro",
+    category: "Photography",
+    location: "Harare, Zimbabwe",
+    image: "/photography.jpg",
+    avatar: "/red.jpg",
+    description: "Wedding, portrait, and event photography with a polished digital gallery.",
+    phone: "+263 77 000 0100",
+    email: "hello@silverlining.co.zw",
+    availability: "Mon-Sun 7AM-8PM",
+    services: ["Wedding Photography", "Events", "Portraits", "Photo Editing"],
+    experience: "9+ years",
+    projects: 420,
+    price: 120,
+    latitude: -17.824,
+    longitude: 31.045,
+  },
   {
     id: 1,
     name: "Miles Auto Clinic",
@@ -99,7 +119,12 @@ const providers = [
     phone: "+263 77 234 5678",
     email: "farai@plumber.co.zw",
     availability: "Mon-Sat 6AM-8PM",
-    services: ["Borehole Drilling", "Pipe Installation", "Water Pump Repair", "Leak Detection"],
+    services: [
+      "Borehole Drilling",
+      "Pipe Installation",
+      "Water Pump Repair",
+      "Leak Detection",
+    ],
     experience: "8+ years",
     projects: 342,
     price: 120,
@@ -123,7 +148,12 @@ const providers = [
     phone: "+263 77 345 6789",
     email: "knight@electricals.co.zw",
     availability: "Mon-Fri 7AM-7PM",
-    services: ["Electrical Installation", "Wiring", "Fault Finding", "Security Systems"],
+    services: [
+      "Electrical Installation",
+      "Wiring",
+      "Fault Finding",
+      "Security Systems",
+    ],
     experience: "15+ years",
     projects: 892,
     price: 180,
@@ -171,8 +201,7 @@ const providers = [
       "https://heroui-assets.nyc3.cdn.digitaloceanspaces.com/docs/oranges.jpeg",
     avatar:
       "https://heroui-assets.nyc3.cdn.digitaloceanspaces.com/avatars/red.jpg",
-    description:
-      "Specialist diesel engine repair, fitter and turner services.",
+    description: "Specialist diesel engine repair, fitter and turner services.",
     phone: "+263 77 567 8901",
     email: "taka@diesel.co.zw",
     availability: "Mon-Sat 6AM-8PM",
@@ -205,7 +234,12 @@ const providers = [
     phone: "+263 77 678 9012",
     email: "sarah@elitecleaners.co.zw",
     availability: "Mon-Sat 7AM-6PM",
-    services: ["Home Cleaning", "Office Cleaning", "Carpet Cleaning", "Window Cleaning"],
+    services: [
+      "Home Cleaning",
+      "Office Cleaning",
+      "Carpet Cleaning",
+      "Window Cleaning",
+    ],
     experience: "6+ years",
     projects: 423,
     price: 90,
@@ -229,7 +263,12 @@ const providers = [
     phone: "+263 77 789 0123",
     email: "david@techfix.co.zw",
     availability: "Mon-Fri 8AM-6PM, Sat 9AM-2PM",
-    services: ["Computer Repair", "Network Setup", "Data Recovery", "IT Support"],
+    services: [
+      "Computer Repair",
+      "Network Setup",
+      "Data Recovery",
+      "IT Support",
+    ],
     experience: "9+ years",
     projects: 567,
     price: 130,
@@ -253,209 +292,235 @@ const providers = [
     phone: "+263 77 890 1234",
     email: "michael@greenthumb.co.zw",
     availability: "Mon-Sat 6AM-5PM",
-    services: ["Garden Design", "Lawn Maintenance", "Tree Trimming", "Irrigation"],
+    services: [
+      "Garden Design",
+      "Lawn Maintenance",
+      "Tree Trimming",
+      "Irrigation",
+    ],
     experience: "11+ years",
     projects: 289,
     price: 160,
     latitude: -17.822,
     longitude: 31.052,
   },
-];
+]
 
 // Get unique categories
-const allCategories = ["All", ...new Set(providers.map(p => p.category))];
+const allCategories = ["All", ...new Set(providers.map((p) => p.category))]
 
 // Get unique locations
-const allLocations = [...new Set(providers.map(p => p.location))];
+const allLocations = [...new Set(providers.map((p) => p.location))]
 
-export default function Providers() {
-  const router = useRouter();
-  const [selectedProvider, setSelectedProvider] = useState<any>(null);
-  const [sheetOpen, setSheetOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [locationQuery, setLocationQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("All");
-  const [selectedRating, setSelectedRating] = useState<string>("All");
-  const [priceRange, setPriceRange] = useState<[number, number]>([50, 300]);
-  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
-  const [isAvailableNow, setIsAvailableNow] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 9;
+type Provider = (typeof providers)[number]
+
+function ProviderDirectory() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const [selectedProvider, setSelectedProvider] = useState<Provider | null>(
+    null
+  )
+  const [sheetOpen, setSheetOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState(
+    () => searchParams.get("q") ?? ""
+  )
+  const [locationQuery, setLocationQuery] = useState(
+    () => searchParams.get("location") ?? ""
+  )
+  const [selectedCategory, setSelectedCategory] = useState<string>("All")
+  const [selectedRating, setSelectedRating] = useState<string>("All")
+  const [priceRange, setPriceRange] = useState<[number, number]>([50, 300])
+  const [selectedFilters, setSelectedFilters] = useState<string[]>([])
+  const [isAvailableNow, setIsAvailableNow] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 9
 
   // Location dialog state
-  const [locationDialogOpen, setLocationDialogOpen] = useState(false);
-  const [locationSearch, setLocationSearch] = useState("");
-  
+  const [locationDialogOpen, setLocationDialogOpen] = useState(false)
+  const [locationSearch, setLocationSearch] = useState("")
+
   // Map dialog state
-  const [mapDialogOpen, setMapDialogOpen] = useState(false);
-  
-  const handleProviderClick = (provider: any) => {
-    setSelectedProvider(provider);
-    setSheetOpen(true);
-  };
+  const [mapDialogOpen, setMapDialogOpen] = useState(false)
+
+  const handleProviderClick = (provider: Provider) => {
+    setSelectedProvider(provider)
+    setSheetOpen(true)
+  }
 
   const handleCloseSheet = () => {
-    setSheetOpen(false);
-    setTimeout(() => setSelectedProvider(null), 300);
-  };
+    setSheetOpen(false)
+    setTimeout(() => setSelectedProvider(null), 300)
+  }
 
   const handleFilterToggle = (filter: string) => {
-    setSelectedFilters(prev =>
+    setSelectedFilters((prev) =>
       prev.includes(filter)
-        ? prev.filter(f => f !== filter)
+        ? prev.filter((f) => f !== filter)
         : [...prev, filter]
-    );
-  };
+    )
+  }
 
   const renderStars = (rating: string) => {
-    const numRating = parseFloat(rating);
-    const fullStars = Math.floor(numRating);
-    const hasHalfStar = numRating % 1 >= 0.5;
-    const stars = [];
+    const numRating = parseFloat(rating)
+    const fullStars = Math.floor(numRating)
+    const hasHalfStar = numRating % 1 >= 0.5
+    const stars = []
 
     for (let i = 0; i < fullStars; i++) {
       stars.push(
         <Star
           key={i}
-          className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-yellow-400 text-yellow-400"
+          className="h-2.5 w-2.5 fill-yellow-400 text-yellow-400 sm:h-3 sm:w-3"
         />
-      );
+      )
     }
     if (hasHalfStar) {
       stars.push(
         <Star
           key="half"
-          className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-yellow-400 text-yellow-400 opacity-50"
+          className="h-2.5 w-2.5 fill-yellow-400 text-yellow-400 opacity-50 sm:h-3 sm:w-3"
         />
-      );
+      )
     }
-    return stars;
-  };
+    return stars
+  }
 
   // Filter providers
   const filteredProviders = useMemo(() => {
-    let filtered = providers;
+    let filtered = providers
 
     if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase().trim();
-      filtered = filtered.filter(provider =>
-        provider.name.toLowerCase().includes(query) ||
-        provider.category.toLowerCase().includes(query) ||
-        provider.owner.toLowerCase().includes(query) ||
-        provider.description.toLowerCase().includes(query)
-      );
+      const query = searchQuery.toLowerCase().trim()
+      filtered = filtered.filter(
+        (provider) =>
+          provider.name.toLowerCase().includes(query) ||
+          provider.category.toLowerCase().includes(query) ||
+          provider.owner.toLowerCase().includes(query) ||
+          provider.description.toLowerCase().includes(query)
+      )
     }
 
     if (locationQuery.trim()) {
-      const query = locationQuery.toLowerCase().trim();
-      filtered = filtered.filter(provider =>
+      const query = locationQuery.toLowerCase().trim()
+      filtered = filtered.filter((provider) =>
         provider.location.toLowerCase().includes(query)
-      );
+      )
     }
 
     if (selectedCategory !== "All") {
-      filtered = filtered.filter(provider =>
-        provider.category === selectedCategory
-      );
+      filtered = filtered.filter(
+        (provider) => provider.category === selectedCategory
+      )
     }
 
     if (selectedRating !== "All") {
-      const minRating = parseFloat(selectedRating);
-      filtered = filtered.filter(provider =>
-        parseFloat(provider.rating) >= minRating
-      );
+      const minRating = parseFloat(selectedRating)
+      filtered = filtered.filter(
+        (provider) => parseFloat(provider.rating) >= minRating
+      )
     }
 
-    filtered = filtered.filter(provider =>
-      provider.price >= priceRange[0] && provider.price <= priceRange[1]
-    );
+    filtered = filtered.filter(
+      (provider) =>
+        provider.price >= priceRange[0] && provider.price <= priceRange[1]
+    )
 
     if (isAvailableNow) {
-      filtered = filtered.filter(provider =>
-        provider.availability.includes("Mon-Sat") ||
-        provider.availability.includes("Mon-Sun")
-      );
+      filtered = filtered.filter(
+        (provider) =>
+          provider.availability.includes("Mon-Sat") ||
+          provider.availability.includes("Mon-Sun")
+      )
     }
 
     if (selectedFilters.length > 0) {
-      filtered = filtered.filter(provider =>
-        selectedFilters.some(filter =>
-          provider.category.toLowerCase().includes(filter.toLowerCase()) ||
-          filter.toLowerCase().includes(provider.category.toLowerCase())
+      filtered = filtered.filter((provider) =>
+        selectedFilters.some(
+          (filter) =>
+            provider.category.toLowerCase().includes(filter.toLowerCase()) ||
+            filter.toLowerCase().includes(provider.category.toLowerCase())
         )
-      );
+      )
     }
 
-    return filtered;
-  }, [searchQuery, locationQuery, selectedCategory, selectedRating, priceRange, selectedFilters, isAvailableNow]);
+    return filtered
+  }, [
+    searchQuery,
+    locationQuery,
+    selectedCategory,
+    selectedRating,
+    priceRange,
+    selectedFilters,
+    isAvailableNow,
+  ])
 
-  const totalPages = Math.ceil(filteredProviders.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentProviders = filteredProviders.slice(startIndex, endIndex);
+  const totalPages = Math.ceil(filteredProviders.length / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  const currentProviders = filteredProviders.slice(startIndex, endIndex)
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+    setCurrentPage(page)
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  }
 
   const clearAllFilters = () => {
-    setSearchQuery("");
-    setLocationQuery("");
-    setSelectedCategory("All");
-    setSelectedRating("All");
-    setPriceRange([50, 300]);
-    setSelectedFilters([]);
-    setIsAvailableNow(false);
-    setCurrentPage(1);
-  };
+    setSearchQuery("")
+    setLocationQuery("")
+    setSelectedCategory("All")
+    setSelectedRating("All")
+    setPriceRange([50, 300])
+    setSelectedFilters([])
+    setIsAvailableNow(false)
+    setCurrentPage(1)
+  }
 
-  const filteredLocations = allLocations.filter(location =>
+  const filteredLocations = allLocations.filter((location) =>
     location.toLowerCase().includes(locationSearch.toLowerCase())
-  );
+  )
 
   return (
     <section className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-6 sm:py-8 md:py-12">
-      <div className="w-full max-w-7xl mx-auto px-3 sm:px-4 md:px-6">
+      <div className="mx-auto w-full max-w-7xl px-3 sm:px-4 md:px-6">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-2xl sm:text-xl md:text-2xl font-bold text-center">
+          <h1 className="text-center text-2xl font-bold sm:text-xl md:text-2xl">
             All Service Providers
           </h1>
-          <p className="text-center text-sm font-medium text-gray-500 mt-2">
+          <p className="mt-2 text-center text-sm font-medium text-gray-500">
             Verified, rated professionals ready to help across Zimbabwe
           </p>
         </div>
 
         {/* Search Bar */}
-        <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="mb-6 grid grid-cols-1 gap-3 md:grid-cols-2">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
             <Input
               type="text"
               placeholder="Search Service / Provider e.g. Plumbing, cleaning"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 pr-4 py-5 bg-white border-gray-200 shadow-sm hover:shadow-md transition-shadow rounded-xl"
+              className="rounded-xl border-gray-200 bg-white py-5 pr-4 pl-10 shadow-sm transition-shadow hover:shadow-md"
             />
           </div>
           <div className="relative">
-            <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <MapPin className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
             <Input
               type="text"
               placeholder="Search By Location"
               value={locationQuery}
               onClick={() => setLocationDialogOpen(true)}
               onChange={(e) => setLocationQuery(e.target.value)}
-              className="pl-10 pr-4 py-5 bg-white border-gray-200 shadow-sm hover:shadow-md transition-shadow rounded-xl cursor-pointer"
+              className="cursor-pointer rounded-xl border-gray-200 bg-white py-5 pr-4 pl-10 shadow-sm transition-shadow hover:shadow-md"
             />
           </div>
         </div>
 
         {/* Location Search Dialog - Full Screen */}
         <Dialog open={locationDialogOpen} onOpenChange={setLocationDialogOpen}>
-          <DialogContent className="max-w-[100vw] w-[100vw] h-[100vh] max-h-[100vh] p-0 m-0 rounded-none bg-white">
-            <DialogHeader className="sticky top-0 z-50 bg-white border-b border-gray-200 px-4 py-4">
+          <DialogContent className="m-0 h-[100vh] max-h-[100vh] w-[100vw] max-w-[100vw] rounded-none bg-white p-0">
+            <DialogHeader className="sticky top-0 z-50 border-b border-gray-200 bg-white px-4 py-4">
               <div className="flex items-center gap-3">
                 <Button
                   variant="ghost"
@@ -463,26 +528,26 @@ export default function Providers() {
                   onClick={() => setLocationDialogOpen(false)}
                   className="hover:bg-gray-100"
                 >
-                  <ChevronLeft className="w-6 h-6" />
+                  <ChevronLeft className="h-6 w-6" />
                 </Button>
-                <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <div className="relative flex-1">
+                  <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
                   <Input
                     placeholder="Search for a location..."
                     value={locationSearch}
                     onChange={(e) => setLocationSearch(e.target.value)}
-                    className="pl-10 pr-4 py-6 text-base bg-gray-50 border-0 focus-visible:ring-1"
+                    className="border-0 bg-gray-50 py-6 pr-4 pl-10 text-base focus-visible:ring-1"
                     autoFocus
                   />
                 </div>
                 <Button
                   onClick={() => {
-                    setMapDialogOpen(true);
-                    setLocationDialogOpen(false);
+                    setMapDialogOpen(true)
+                    setLocationDialogOpen(false)
                   }}
-                  className="bg-sky-500 hover:bg-sky-600 text-white px-6"
+                  className="bg-sky-500 px-6 text-white hover:bg-sky-600"
                 >
-                  <Navigation className="w-4 h-4 mr-2" />
+                  <Navigation className="mr-2 h-4 w-4" />
                   Map View
                 </Button>
               </div>
@@ -490,25 +555,29 @@ export default function Providers() {
 
             <div className="h-[calc(100vh-80px)] overflow-y-auto p-4">
               {filteredLocations.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {filteredLocations.map((location) => (
                     <Button
                       key={location}
                       onClick={() => {
-                        setLocationQuery(location);
-                        setLocationSearch("");
-                        setLocationDialogOpen(false);
+                        setLocationQuery(location)
+                        setLocationSearch("")
+                        setLocationDialogOpen(false)
                       }}
-                      className="w-full justify-start px-4 py-6 h-auto bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-xl border border-gray-100"
+                      className="h-auto w-full justify-start rounded-xl border border-gray-100 bg-gray-50 px-4 py-6 text-gray-700 hover:bg-gray-100"
                     >
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-full bg-sky-100 flex items-center justify-center flex-shrink-0">
-                          <MapPin className="w-6 h-6 text-sky-500" />
+                        <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-sky-100">
+                          <MapPin className="h-6 w-6 text-sky-500" />
                         </div>
                         <div className="text-left">
-                          <p className="font-semibold text-base">{location}</p>
+                          <p className="text-base font-semibold">{location}</p>
                           <p className="text-sm text-gray-500">
-                            {providers.filter(p => p.location === location).length} providers available
+                            {
+                              providers.filter((p) => p.location === location)
+                                .length
+                            }{" "}
+                            providers available
                           </p>
                         </div>
                       </div>
@@ -516,8 +585,8 @@ export default function Providers() {
                   ))}
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center h-full text-gray-500">
-                  <MapPin className="w-20 h-20 text-gray-300 mb-4" />
+                <div className="flex h-full flex-col items-center justify-center text-gray-500">
+                  <MapPin className="mb-4 h-20 w-20 text-gray-300" />
                   <p className="text-xl font-medium">No locations found</p>
                   <p className="text-sm">Try searching for a different area</p>
                 </div>
@@ -528,23 +597,23 @@ export default function Providers() {
 
         {/* Full Screen Map Dialog */}
         <Dialog open={mapDialogOpen} onOpenChange={setMapDialogOpen}>
-          <DialogContent className="max-w-[100vw] w-[100vw] h-[100vh] max-h-[100vh] p-0 m-0 rounded-none bg-black">
-            <DialogHeader className="absolute top-0 left-0 right-0 z-50 bg-gradient-to-b from-black/70 to-transparent px-4 py-4">
+          <DialogContent className="m-0 h-[100vh] max-h-[100vh] w-[100vw] max-w-[100vw] rounded-none bg-black p-0">
+            <DialogHeader className="absolute top-0 right-0 left-0 z-50 bg-gradient-to-b from-black/70 to-transparent px-4 py-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => {
-                      setMapDialogOpen(false);
-                      setLocationDialogOpen(true);
+                      setMapDialogOpen(false)
+                      setLocationDialogOpen(true)
                     }}
                     className="text-white hover:bg-white/20"
                   >
-                    <ChevronLeft className="w-6 h-6" />
+                    <ChevronLeft className="h-6 w-6" />
                   </Button>
-                  <h2 className="text-white text-lg font-semibold">
-                    <MapPin className="w-5 h-5 inline mr-2" />
+                  <h2 className="text-lg font-semibold text-white">
+                    <MapPin className="mr-2 inline h-5 w-5" />
                     Find Providers Near You
                   </h2>
                 </div>
@@ -554,11 +623,11 @@ export default function Providers() {
                   onClick={() => setMapDialogOpen(false)}
                   className="text-white hover:bg-white/20"
                 >
-                  <X className="w-6 h-6" />
+                  <X className="h-6 w-6" />
                 </Button>
               </div>
             </DialogHeader>
-            <div className="w-full h-full">
+            <div className="h-full w-full">
               <ProviderMap
                 showControls={true}
                 showSearch={true}
@@ -569,14 +638,14 @@ export default function Providers() {
           </DialogContent>
         </Dialog>
 
-        <div className="flex flex-col lg:flex-row gap-6">
+        <div className="flex flex-col gap-6 lg:flex-row">
           {/* Sidebar Filters */}
-          <div className="w-full lg:w-72 flex-shrink-0">
+          <div className="w-full flex-shrink-0 lg:w-72">
             <Card className="sticky top-6">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <SlidersHorizontal className="w-4 h-4" />
+                  <CardTitle className="flex items-center gap-2 text-lg">
+                    <SlidersHorizontal className="h-4 w-4" />
                     Filters
                   </CardTitle>
                   <Button
@@ -595,15 +664,22 @@ export default function Providers() {
 
               <CardContent className="space-y-6">
                 <div>
-                  <h4 className="text-sm font-semibold text-gray-700 mb-2">SEARCH AREA</h4>
+                  <h4 className="mb-2 text-sm font-semibold text-gray-700">
+                    SEARCH AREA
+                  </h4>
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
                       <Checkbox
                         id="nearby-search"
                         checked={selectedFilters.includes("NearBy Search")}
-                        onCheckedChange={() => handleFilterToggle("NearBy Search")}
+                        onCheckedChange={() =>
+                          handleFilterToggle("NearBy Search")
+                        }
                       />
-                      <label htmlFor="nearby-search" className="text-sm text-gray-600">
+                      <label
+                        htmlFor="nearby-search"
+                        className="text-sm text-gray-600"
+                      >
                         NearBy Search
                       </label>
                     </div>
@@ -613,8 +689,10 @@ export default function Providers() {
                 <Separator />
 
                 <div>
-                  <h4 className="text-sm font-semibold text-gray-700 mb-2">CATEGORY</h4>
-                  <div className="space-y-2 max-h-48 overflow-y-auto pr-2">
+                  <h4 className="mb-2 text-sm font-semibold text-gray-700">
+                    CATEGORY
+                  </h4>
+                  <div className="max-h-48 space-y-2 overflow-y-auto pr-2">
                     {allCategories.map((category) => (
                       <div key={category} className="flex items-center gap-2">
                         <Checkbox
@@ -626,19 +704,27 @@ export default function Providers() {
                           }
                           onCheckedChange={() => {
                             if (category === "All") {
-                              setSelectedCategory("All");
+                              setSelectedCategory("All")
                             } else {
                               setSelectedCategory(
                                 selectedCategory === category ? "All" : category
-                              );
+                              )
                             }
                           }}
                         />
-                        <label htmlFor={`category-${category}`} className="text-sm text-gray-600">
+                        <label
+                          htmlFor={`category-${category}`}
+                          className="text-sm text-gray-600"
+                        >
                           {category}
                           {category !== "All" && (
-                            <span className="text-xs text-gray-400 ml-1">
-                              ({providers.filter(p => p.category === category).length})
+                            <span className="ml-1 text-xs text-gray-400">
+                              (
+                              {
+                                providers.filter((p) => p.category === category)
+                                  .length
+                              }
+                              )
                             </span>
                           )}
                         </label>
@@ -650,14 +736,27 @@ export default function Providers() {
                 <Separator />
 
                 <div>
-                  <h4 className="text-sm font-semibold text-gray-700 mb-2">Rating</h4>
-                  <RadioGroup value={selectedRating} onValueChange={setSelectedRating}>
+                  <h4 className="mb-2 text-sm font-semibold text-gray-700">
+                    Rating
+                  </h4>
+                  <RadioGroup
+                    value={selectedRating}
+                    onValueChange={setSelectedRating}
+                  >
                     <div className="space-y-2">
                       {["All", "4.5", "4.0", "3.5"].map((rating) => (
                         <div key={rating} className="flex items-center gap-2">
-                          <RadioGroupItem value={rating} id={`rating-${rating}`} />
-                          <label htmlFor={`rating-${rating}`} className="text-sm text-gray-600 flex items-center gap-1">
-                            {rating === "All" ? "All Ratings" : (
+                          <RadioGroupItem
+                            value={rating}
+                            id={`rating-${rating}`}
+                          />
+                          <label
+                            htmlFor={`rating-${rating}`}
+                            className="flex items-center gap-1 text-sm text-gray-600"
+                          >
+                            {rating === "All" ? (
+                              "All Ratings"
+                            ) : (
                               <>
                                 {renderStars(rating)}
                                 <span>& up</span>
@@ -673,23 +772,23 @@ export default function Providers() {
                 <Separator />
 
                 <div>
-                  <h4 className="text-sm font-semibold text-gray-700 mb-2">Price Range</h4>
+                  <h4 className="mb-2 text-sm font-semibold text-gray-700">
+                    Price Range
+                  </h4>
                   <div className="px-1">
                     <Slider
                       min={0}
                       max={500}
                       step={10}
                       value={priceRange}
-                      onValueChange={(value) => setPriceRange(value as [number, number])}
+                      onValueChange={(value) =>
+                        setPriceRange(value as [number, number])
+                      }
                       className="my-4"
                     />
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">
-                        ${priceRange[0]}
-                      </span>
-                      <span className="text-gray-600">
-                        ${priceRange[1]}
-                      </span>
+                      <span className="text-gray-600">${priceRange[0]}</span>
+                      <span className="text-gray-600">${priceRange[1]}</span>
                     </div>
                   </div>
                 </div>
@@ -697,14 +796,19 @@ export default function Providers() {
                 <Separator />
 
                 <div>
-                  <h4 className="text-sm font-semibold text-gray-700 mb-2">Availability</h4>
+                  <h4 className="mb-2 text-sm font-semibold text-gray-700">
+                    Availability
+                  </h4>
                   <div className="flex items-center gap-2">
                     <Checkbox
                       id="available-now"
                       checked={isAvailableNow}
                       onCheckedChange={() => setIsAvailableNow(!isAvailableNow)}
                     />
-                    <label htmlFor="available-now" className="text-sm text-gray-600">
+                    <label
+                      htmlFor="available-now"
+                      className="text-sm text-gray-600"
+                    >
                       Available now
                     </label>
                   </div>
@@ -724,11 +828,11 @@ export default function Providers() {
 
           {/* Provider Cards Grid */}
           <div className="flex-1">
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4 md:gap-6 lg:grid-cols-3 xl:grid-cols-3">
               {currentProviders.map((provider) => (
                 <div
                   key={provider.id}
-                  className={`group relative h-[280px] sm:h-[300px] md:h-[320px] overflow-hidden rounded-2xl sm:rounded-3xl shadow-lg cursor-pointer transition-all hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] touch-manipulation ${
+                  className={`group relative h-[280px] cursor-pointer touch-manipulation overflow-hidden rounded-2xl shadow-lg transition-all hover:scale-[1.02] hover:shadow-xl active:scale-[0.98] sm:h-[300px] sm:rounded-3xl md:h-[320px] ${
                     selectedProvider?.id === provider.id && sheetOpen
                       ? "ring-2 ring-blue-600 ring-offset-2"
                       : ""
@@ -737,9 +841,9 @@ export default function Providers() {
                   tabIndex={0}
                   onClick={() => handleProviderClick(provider)}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      handleProviderClick(provider);
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault()
+                      handleProviderClick(provider)
                     }
                   }}
                 >
@@ -754,57 +858,57 @@ export default function Providers() {
 
                   {isAvailableNow && (
                     <div className="absolute top-3 right-3 z-10">
-                      <Badge className="bg-green-500 text-white border-0 shadow-lg">
+                      <Badge className="border-0 bg-green-500 text-white shadow-lg">
                         Available now
                       </Badge>
                     </div>
                   )}
 
-                  <div className="absolute bottom-0 left-0 z-10 p-4 sm:p-5 md:p-6 w-full">
-                    <h3 className="text-lg sm:text-xl font-bold text-white line-clamp-1">
+                  <div className="absolute bottom-0 left-0 z-10 w-full p-4 sm:p-5 md:p-6">
+                    <h3 className="line-clamp-1 text-lg font-bold text-white sm:text-xl">
                       {provider.name}
                     </h3>
 
-                    <div className="flex flex-wrap items-center gap-1 sm:gap-2 mt-1.5">
+                    <div className="mt-1.5 flex flex-wrap items-center gap-1 sm:gap-2">
                       <div className="flex items-center gap-0.5">
                         {renderStars(provider.rating)}
                       </div>
-                      <span className="text-xs sm:text-sm font-semibold text-white">
+                      <span className="text-xs font-semibold text-white sm:text-sm">
                         {provider.rating}
                       </span>
-                      <span className="text-xs sm:text-sm text-white/70">
+                      <span className="text-xs text-white/70 sm:text-sm">
                         ({provider.reviews})
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-1.5 mt-1.5">
-                      <Briefcase className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-white/70 flex-shrink-0" />
-                      <span className="text-xs sm:text-sm text-white/80 truncate">
+                    <div className="mt-1.5 flex items-center gap-1.5">
+                      <Briefcase className="h-3 w-3 flex-shrink-0 text-white/70 sm:h-3.5 sm:w-3.5" />
+                      <span className="truncate text-xs text-white/80 sm:text-sm">
                         {provider.category}
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-1.5 mt-1">
-                      <MapPin className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-white/70 flex-shrink-0" />
-                      <span className="text-xs sm:text-sm text-white/80 truncate">
+                    <div className="mt-1 flex items-center gap-1.5">
+                      <MapPin className="h-3 w-3 flex-shrink-0 text-white/70 sm:h-3.5 sm:w-3.5" />
+                      <span className="truncate text-xs text-white/80 sm:text-sm">
                         {provider.location}
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-2 mt-3 pt-3 border-t border-white/10">
-                      <Avatar className="size-5 sm:size-6 ring-2 ring-white/30">
+                    <div className="mt-3 flex items-center gap-2 border-t border-white/10 pt-3">
+                      <Avatar className="size-5 ring-2 ring-white/30 sm:size-6">
                         <AvatarImage
                           src={provider.avatar}
                           alt={provider.owner}
                         />
-                        <AvatarFallback className="text-[10px] sm:text-xs bg-white/20 text-white">
+                        <AvatarFallback className="bg-white/20 text-[10px] text-white sm:text-xs">
                           {provider.name
                             .split(" ")
                             .map((word) => word[0])
                             .join("")}
                         </AvatarFallback>
                       </Avatar>
-                      <span className="text-xs sm:text-sm text-white/90 truncate">
+                      <span className="truncate text-xs text-white/90 sm:text-sm">
                         By {provider.owner}
                       </span>
                     </div>
@@ -814,12 +918,14 @@ export default function Providers() {
             </div>
 
             {filteredProviders.length === 0 && (
-              <div className="text-center py-12">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
-                  <Search className="w-8 h-8 text-gray-400" />
+              <div className="py-12 text-center">
+                <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
+                  <Search className="h-8 w-8 text-gray-400" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900">No providers found</h3>
-                <p className="text-sm text-gray-500 mt-1">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  No providers found
+                </h3>
+                <p className="mt-1 text-sm text-gray-500">
                   Try adjusting your search or filter criteria
                 </p>
                 <Button
@@ -840,26 +946,30 @@ export default function Providers() {
                       <PaginationPrevious
                         href="#"
                         onClick={(e) => {
-                          e.preventDefault();
-                          if (currentPage > 1) handlePageChange(currentPage - 1);
+                          e.preventDefault()
+                          if (currentPage > 1) handlePageChange(currentPage - 1)
                         }}
-                        className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                        className={
+                          currentPage === 1
+                            ? "pointer-events-none opacity-50"
+                            : ""
+                        }
                       />
                     </PaginationItem>
 
                     {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-                      let pageNumber;
+                      let pageNumber
                       if (totalPages <= 5) {
-                        pageNumber = i + 1;
+                        pageNumber = i + 1
                       } else if (currentPage <= 3) {
-                        pageNumber = i + 1;
+                        pageNumber = i + 1
                       } else if (currentPage >= totalPages - 2) {
-                        pageNumber = totalPages - 4 + i;
+                        pageNumber = totalPages - 4 + i
                       } else {
-                        pageNumber = currentPage - 2 + i;
+                        pageNumber = currentPage - 2 + i
                       }
 
-                      if (pageNumber < 1 || pageNumber > totalPages) return null;
+                      if (pageNumber < 1 || pageNumber > totalPages) return null
 
                       return (
                         <PaginationItem key={pageNumber}>
@@ -867,14 +977,14 @@ export default function Providers() {
                             href="#"
                             isActive={currentPage === pageNumber}
                             onClick={(e) => {
-                              e.preventDefault();
-                              handlePageChange(pageNumber);
+                              e.preventDefault()
+                              handlePageChange(pageNumber)
                             }}
                           >
                             {pageNumber}
                           </PaginationLink>
                         </PaginationItem>
-                      );
+                      )
                     })}
 
                     {totalPages > 5 && currentPage < totalPages - 2 && (
@@ -888,8 +998,8 @@ export default function Providers() {
                         <PaginationLink
                           href="#"
                           onClick={(e) => {
-                            e.preventDefault();
-                            handlePageChange(totalPages);
+                            e.preventDefault()
+                            handlePageChange(totalPages)
                           }}
                         >
                           {totalPages}
@@ -901,10 +1011,15 @@ export default function Providers() {
                       <PaginationNext
                         href="#"
                         onClick={(e) => {
-                          e.preventDefault();
-                          if (currentPage < totalPages) handlePageChange(currentPage + 1);
+                          e.preventDefault()
+                          if (currentPage < totalPages)
+                            handlePageChange(currentPage + 1)
                         }}
-                        className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                        className={
+                          currentPage === totalPages
+                            ? "pointer-events-none opacity-50"
+                            : ""
+                        }
                       />
                     </PaginationItem>
                   </PaginationContent>
@@ -915,5 +1030,13 @@ export default function Providers() {
         </div>
       </div>
     </section>
-  );
+  )
+}
+
+export default function Providers() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#f5f2ed]" />}>
+      <ProviderDirectory />
+    </Suspense>
+  )
 }

@@ -1,6 +1,8 @@
 "use client"
 
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
 import {
   Camera,
   CameraIcon,
@@ -29,6 +31,10 @@ const categories = [
 ]
 
 export default function Hero() {
+  const router = useRouter()
+  const [service, setService] = useState("")
+  const [location, setLocation] = useState("")
+
   return (
     <section className="relative isolate overflow-hidden bg-[#faf9f7]">
       <div className="absolute inset-x-0 top-0 -z-10 h-[30rem] bg-[radial-gradient(circle_at_50%_0%,#efe7da_0%,transparent_68%)]" />
@@ -54,7 +60,13 @@ export default function Hero() {
 
         <form
           className="mx-auto mt-9 flex max-w-4xl flex-col rounded-2xl border border-[#e5e0d8] bg-white p-2 shadow-[0_16px_50px_-28px_rgba(44,37,27,0.38)] md:mt-12 md:flex-row md:items-center md:rounded-full"
-          onSubmit={(event) => event.preventDefault()}
+          onSubmit={(event) => {
+            event.preventDefault()
+            const params = new URLSearchParams()
+            if (service.trim()) params.set("q", service.trim())
+            if (location.trim()) params.set("location", location.trim())
+            router.push(`/providers${params.size ? `?${params}` : ""}`)
+          }}
         >
           <label className="group flex min-w-0 flex-1 items-center gap-3 rounded-xl px-3 py-3.5 transition-colors focus-within:bg-[#faf9f7] sm:px-4 md:rounded-full">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#f5f1eb] text-[#39342d] transition-colors group-focus-within:bg-[#e9e1d5]">
@@ -65,6 +77,8 @@ export default function Hero() {
                 What are you looking for?
               </span>
               <input
+                value={service}
+                onChange={(event) => setService(event.target.value)}
                 className="mt-0.5 w-full min-w-0 bg-transparent text-sm text-[#29251f] outline-none placeholder:text-[#969087]"
                 placeholder="Photography, DJ, catering..."
                 aria-label="Service"
@@ -83,6 +97,8 @@ export default function Hero() {
                 Where?
               </span>
               <input
+                value={location}
+                onChange={(event) => setLocation(event.target.value)}
                 className="mt-0.5 w-full min-w-0 bg-transparent text-sm text-[#29251f] outline-none placeholder:text-[#969087]"
                 placeholder="Harare, Zimbabwe"
                 aria-label="Location"
@@ -90,13 +106,13 @@ export default function Hero() {
             </span>
           </label>
 
-          <Link
-            href="/book"
+          <button
+            type="submit"
             className="mt-1 inline-flex h-12 w-full items-center justify-center rounded-xl bg-[#29251f] px-6 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#454037] md:mt-0 md:w-auto md:rounded-full"
           >
             <Search className="mr-2 h-4 w-4 md:hidden" aria-hidden="true" />
-            Start booking
-          </Link>
+            Find providers
+          </button>
         </form>
 
         <div className="mt-12 sm:mt-16">

@@ -1,26 +1,25 @@
-"use client";
+"use client"
 
-import { useEffect, useState, useCallback } from 'react';
-import { 
-  Volume2, 
-  VolumeX, 
-  ChevronLeft, 
+import { useEffect, useState, useCallback } from "react"
+import type { RouteStep } from "@/lib/mapbox"
+import {
+  Volume2,
+  VolumeX,
+  ChevronLeft,
   ChevronRight,
   Navigation,
-  Clock,
   MapPin,
-  AlertCircle
-} from 'lucide-react';
+} from "lucide-react"
 
 interface VoiceNavigationProps {
-  steps: any[];
-  currentStepIndex: number;
-  onNext: () => void;
-  onPrevious: () => void;
-  isNavigating: boolean;
-  distance: number;
-  duration: number;
-  onStop: () => void;
+  steps: RouteStep[]
+  currentStepIndex: number
+  onNext: () => void
+  onPrevious: () => void
+  isNavigating: boolean
+  distance: number
+  duration: number
+  onStop: () => void
 }
 
 export default function VoiceNavigation({
@@ -33,91 +32,92 @@ export default function VoiceNavigation({
   duration,
   onStop,
 }: VoiceNavigationProps) {
-  const [isMuted, setIsMuted] = useState(false);
-  const [speechSupported, setSpeechSupported] = useState(true);
+  const [isMuted, setIsMuted] = useState(false)
+  const speechSupported =
+    typeof window !== "undefined" && "speechSynthesis" in window
 
-  const currentStep = steps[currentStepIndex] || steps[0];
-  const totalSteps = steps.length;
+  const currentStep = steps[currentStepIndex] || steps[0]
+  const totalSteps = steps.length
 
   // Text-to-Speech for voice navigation
-  const speak = useCallback((text: string) => {
-    if (isMuted || !window.speechSynthesis) return;
+  const speak = useCallback(
+    (text: string) => {
+      if (isMuted || !window.speechSynthesis) return
 
-    // Cancel any ongoing speech
-    window.speechSynthesis.cancel();
+      // Cancel any ongoing speech
+      window.speechSynthesis.cancel()
 
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 0.9;
-    utterance.pitch = 1;
-    utterance.volume = 1;
-    utterance.lang = 'en-US';
+      const utterance = new SpeechSynthesisUtterance(text)
+      utterance.rate = 0.9
+      utterance.pitch = 1
+      utterance.volume = 1
+      utterance.lang = "en-US"
 
-    // Try to get a female voice
-    const voices = window.speechSynthesis.getVoices();
-    const femaleVoice = voices.find(voice => 
-      voice.name.includes('Samantha') || 
-      voice.name.includes('Google UK') ||
-      voice.name.includes('Microsoft Zira')
-    );
-    if (femaleVoice) {
-      utterance.voice = femaleVoice;
-    }
+      // Try to get a female voice
+      const voices = window.speechSynthesis.getVoices()
+      const femaleVoice = voices.find(
+        (voice) =>
+          voice.name.includes("Samantha") ||
+          voice.name.includes("Google UK") ||
+          voice.name.includes("Microsoft Zira")
+      )
+      if (femaleVoice) {
+        utterance.voice = femaleVoice
+      }
 
-    window.speechSynthesis.speak(utterance);
-  }, [isMuted]);
+      window.speechSynthesis.speak(utterance)
+    },
+    [isMuted]
+  )
 
   // Auto-speak when step changes
   useEffect(() => {
-    if (!isNavigating || !currentStep) return;
+    if (!isNavigating || !currentStep) return
 
-    const instruction = currentStep.maneuver?.instruction || 
-                       currentStep.instructions || 
-                       'Continue straight';
-    
+    const instruction =
+      currentStep.maneuver?.instruction ||
+      currentStep.instructions ||
+      "Continue straight"
+
     // Speak the instruction
-    speak(instruction);
+    speak(instruction)
 
     // Also speak distance to next turn if available
     if (currentStep.distance) {
-      const distText = currentStep.distance < 1000 
-        ? `${Math.round(currentStep.distance)} meters`
-        : `${(currentStep.distance / 1000).toFixed(1)} kilometers`;
-      
+      const distText =
+        currentStep.distance < 1000
+          ? `${Math.round(currentStep.distance)} meters`
+          : `${(currentStep.distance / 1000).toFixed(1)} kilometers`
+
       setTimeout(() => {
-        speak(`In ${distText}`);
-      }, 1500);
+        speak(`In ${distText}`)
+      }, 1500)
     }
-  }, [currentStepIndex, isNavigating, speak, currentStep]);
+  }, [currentStepIndex, isNavigating, speak, currentStep])
 
   // Cleanup speech on unmount
   useEffect(() => {
     return () => {
       if (window.speechSynthesis) {
-        window.speechSynthesis.cancel();
+        window.speechSynthesis.cancel()
       }
-    };
-  }, []);
-
-  // Check speech support
-  useEffect(() => {
-    if (!('speechSynthesis' in window)) {
-      setSpeechSupported(false);
     }
-  }, []);
+  }, [])
 
-  if (!currentStep || !isNavigating) return null;
+  if (!currentStep || !isNavigating) return null
 
-  const instruction = currentStep.maneuver?.instruction || 
-                     currentStep.instructions || 
-                     'Continue straight';
-  const icon = currentStep.maneuver?.modifier || 'straight';
+  const instruction =
+    currentStep.maneuver?.instruction ||
+    currentStep.instructions ||
+    "Continue straight"
+  const icon = currentStep.maneuver?.modifier || "straight"
 
   return (
     <div className="absolute bottom-8 left-1/2 w-[90%] max-w-2xl -translate-x-1/2">
-      <div className="rounded-2xl bg-white/95 p-5 shadow-2xl backdrop-blur-xl border border-white/20 animate-in slide-in-from-bottom duration-500">
+      <div className="animate-in rounded-2xl border border-white/20 bg-white/95 p-5 shadow-2xl backdrop-blur-xl duration-500 slide-in-from-bottom">
         {/* Progress Bar */}
         <div className="mb-4 h-1 w-full overflow-hidden rounded-full bg-gray-200">
-          <div 
+          <div
             className="h-full rounded-full bg-gradient-to-r from-sky-500 to-sky-400 transition-all duration-500"
             style={{ width: `${((currentStepIndex + 1) / totalSteps) * 100}%` }}
           />
@@ -152,8 +152,8 @@ export default function VoiceNavigation({
           {speechSupported && (
             <button
               onClick={() => setIsMuted(!isMuted)}
-              className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition"
-              title={isMuted ? 'Unmute voice' : 'Mute voice'}
+              className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 transition hover:bg-gray-200"
+              title={isMuted ? "Unmute voice" : "Mute voice"}
             >
               {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
             </button>
@@ -183,26 +183,22 @@ export default function VoiceNavigation({
             <button
               onClick={onPrevious}
               disabled={currentStepIndex === 0}
-              className={`
-                flex h-9 w-9 items-center justify-center rounded-full transition
-                ${currentStepIndex === 0 
-                  ? 'cursor-not-allowed bg-gray-100 text-gray-400' 
-                  : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                }
-              `}
+              className={`flex h-9 w-9 items-center justify-center rounded-full transition ${
+                currentStepIndex === 0
+                  ? "cursor-not-allowed bg-gray-100 text-gray-400"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              } `}
             >
               <ChevronLeft size={18} />
             </button>
             <button
               onClick={onNext}
               disabled={currentStepIndex === totalSteps - 1}
-              className={`
-                flex h-9 w-9 items-center justify-center rounded-full transition
-                ${currentStepIndex === totalSteps - 1 
-                  ? 'cursor-not-allowed bg-gray-100 text-gray-400' 
-                  : 'bg-sky-500 hover:bg-sky-600 text-white'
-                }
-              `}
+              className={`flex h-9 w-9 items-center justify-center rounded-full transition ${
+                currentStepIndex === totalSteps - 1
+                  ? "cursor-not-allowed bg-gray-100 text-gray-400"
+                  : "bg-sky-500 text-white hover:bg-sky-600"
+              } `}
             >
               <ChevronRight size={18} />
             </button>
@@ -218,47 +214,47 @@ export default function VoiceNavigation({
         </button>
       </div>
     </div>
-  );
+  )
 }
 
 function getTurnEmoji(modifier: string): string {
   const map: Record<string, string> = {
-    'straight': '⬆️',
-    'left': '⬅️',
-    'right': '➡️',
-    'sharp left': '↰',
-    'sharp right': '↱',
-    'slight left': '↖️',
-    'slight right': '↗️',
-    'u-turn': '↩️',
-  };
-  return map[modifier] || '📍';
+    straight: "⬆️",
+    left: "⬅️",
+    right: "➡️",
+    "sharp left": "↰",
+    "sharp right": "↱",
+    "slight left": "↖️",
+    "slight right": "↗️",
+    "u-turn": "↩️",
+  }
+  return map[modifier] || "📍"
 }
 
 function cleanInstruction(text: string): string {
-  return text.replace(/<[^>]*>/g, '').trim();
+  return text.replace(/<[^>]*>/g, "").trim()
 }
 
 function formatDistance(meters: number): string {
   if (meters < 1000) {
-    return `${Math.round(meters)} m`;
+    return `${Math.round(meters)} m`
   }
-  return `${(meters / 1000).toFixed(1)} km`;
+  return `${(meters / 1000).toFixed(1)} km`
 }
 
 function formatDuration(seconds: number): string {
-  const minutes = Math.floor(seconds / 60);
+  const minutes = Math.floor(seconds / 60)
   if (minutes < 60) {
-    return `${minutes} min`;
+    return `${minutes} min`
   }
-  const hours = Math.floor(minutes / 60);
-  const remainingMinutes = minutes % 60;
-  return `${hours}h ${remainingMinutes}m`;
+  const hours = Math.floor(minutes / 60)
+  const remainingMinutes = minutes % 60
+  return `${hours}h ${remainingMinutes}m`
 }
 
 function formatStepDistance(meters: number): string {
   if (meters < 1000) {
-    return `${Math.round(meters)}m`;
+    return `${Math.round(meters)}m`
   }
-  return `${(meters / 1000).toFixed(1)}km`;
+  return `${(meters / 1000).toFixed(1)}km`
 }

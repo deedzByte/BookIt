@@ -232,6 +232,22 @@ export default function ServiceDashboard() {
   const [showAddCategory, setShowAddCategory] = useState(false)
   const [showAddPackage, setShowAddPackage] = useState(false)
 
+  const handleAddService = (service: {
+    name: string
+    isActive: boolean
+    category: unknown[]
+  }) => {
+    const nextService: Service = {
+      id: `srv_${services.length + 1}`,
+      name: service.name,
+      isActive: service.isActive,
+      category: [],
+    }
+    setServices((current) => [...current, nextService])
+    setSelectedServiceId(nextService.id)
+    toast.success("Service added")
+  }
+
   // Derived data
   const selectedService = services.find((s) => s.id === selectedServiceId)
   const selectedCategory = selectedService?.category.find(
@@ -414,6 +430,7 @@ export default function ServiceDashboard() {
             selectedId={selectedServiceId}
             onSelect={setSelectedServiceId}
             onDelete={handleDeleteService}
+            onAdd={handleAddService}
           />
 
           {/* Middle Column - Categories */}
