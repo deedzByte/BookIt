@@ -36,15 +36,15 @@ export function NavMain({
              <Link href="/admin/dashboard">Dashboard</Link>
             </SidebarMenuButton>
 <Popover>
-  <PopoverTrigger>
-    <Button
+  <PopoverTrigger
+    render={<Button
       size="icon"
       className="size-8 group-data-[collapsible=icon]:opacity-0"
       variant="outline"
-    >
+    />}
+  >
       <MailIcon className="h-4 w-4" />
       <span className="sr-only">Reminders</span>
-    </Button>
   </PopoverTrigger>
 
 <PopoverContent

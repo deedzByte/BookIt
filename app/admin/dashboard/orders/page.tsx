@@ -15,7 +15,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { ChevronDownIcon, ChevronUpIcon, EllipsisVerticalIcon } from "lucide-react"
+import {
+  ChevronDownIcon,
+  ChevronUpIcon,
+  EllipsisVerticalIcon,
+} from "lucide-react"
 import {
   closestCenter,
   DndContext,
@@ -60,6 +64,7 @@ import {
 } from "@tabler/icons-react"
 import {
   type ColumnDef,
+  type Column,
   type ColumnFiltersState,
   flexRender,
   getCoreRowModel,
@@ -97,14 +102,20 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { format } from "date-fns"
-import { 
-  ClockIcon, 
-  CheckCircleIcon, 
-  XCircleIcon, 
+import {
+  ClockIcon,
+  CheckCircleIcon,
+  XCircleIcon,
   LoaderIcon,
   CreditCardIcon,
   CalendarIcon,
@@ -113,8 +124,21 @@ import {
   MailIcon,
   PhoneIcon,
 } from "lucide-react"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+  type CarouselApi,
+} from "@/components/ui/carousel"
 
 // ============================================================
 // SCHEMA
@@ -137,24 +161,30 @@ export const bookingSchema = z.object({
   paymentStatus: z.string(),
   location: z.string(),
   guests: z.number(),
-  addons: z.array(z.object({
-    id: z.string(),
-    name: z.string(),
-    price: z.number(),
-    quantity: z.number().optional(),
-  })),
-  prints: z.array(z.object({
-    id: z.string(),
-    name: z.string(),
-    size: z.string(),
-    price: z.number(),
-    quantity: z.number(),
-  })),
-  templates: z.array(z.object({
-    id: z.string(),
-    name: z.string(),
-    price: z.number(),
-  })),
+  addons: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      price: z.number(),
+      quantity: z.number().optional(),
+    })
+  ),
+  prints: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      size: z.string(),
+      price: z.number(),
+      quantity: z.number(),
+    })
+  ),
+  templates: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      price: z.number(),
+    })
+  ),
   notes: z.string().optional(),
   staffAssigned: z.string().optional(),
   createdAt: z.string(),
@@ -221,9 +251,7 @@ const MOCK_BOOKINGS: z.infer<typeof bookingSchema>[] = [
     prints: [
       { id: "print-3", name: '6" x 8"', size: "6x8", price: 25, quantity: 15 },
     ],
-    templates: [
-      { id: "template-3", name: "Collage", price: 20 },
-    ],
+    templates: [{ id: "template-3", name: "Collage", price: 20 }],
     notes: "Company logo needed on prints",
     staffAssigned: "Mike Chen",
     createdAt: "2024-11-05T14:30:00Z",
@@ -246,15 +274,11 @@ const MOCK_BOOKINGS: z.infer<typeof bookingSchema>[] = [
     paymentStatus: "Paid",
     location: "Garden Venue, Hillside",
     guests: 35,
-    addons: [
-      { id: "props-2", name: "Props Package", price: 50, quantity: 1 },
-    ],
+    addons: [{ id: "props-2", name: "Props Package", price: 50, quantity: 1 }],
     prints: [
       { id: "print-1", name: '4" x 6"', size: "4x6", price: 0, quantity: 30 },
     ],
-    templates: [
-      { id: "template-1", name: "Classic Strip", price: 0 },
-    ],
+    templates: [{ id: "template-1", name: "Classic Strip", price: 0 }],
     notes: "Birthday girl loves unicorn themes",
     staffAssigned: "Lisa Park",
     createdAt: "2024-11-10T09:15:00Z",
@@ -285,7 +309,13 @@ const MOCK_BOOKINGS: z.infer<typeof bookingSchema>[] = [
     ],
     prints: [
       { id: "print-2", name: '5" x 7"', size: "5x7", price: 15, quantity: 25 },
-      { id: "print-4", name: '8" x 10"', size: "8x10", price: 40, quantity: 10 },
+      {
+        id: "print-4",
+        name: '8" x 10"',
+        size: "8x10",
+        price: 40,
+        quantity: 10,
+      },
     ],
     templates: [
       { id: "template-2", name: "Modern Grid", price: 10 },
@@ -415,9 +445,7 @@ const MOCK_BOOKINGS: z.infer<typeof bookingSchema>[] = [
     prints: [
       { id: "print-1", name: '4" x 6"', size: "4x6", price: 0, quantity: 20 },
     ],
-    templates: [
-      { id: "template-2", name: "Modern Grid", price: 10 },
-    ],
+    templates: [{ id: "template-2", name: "Modern Grid", price: 10 }],
     notes: "Cancelled due to venue issues",
     staffAssigned: "David Kim",
     createdAt: "2024-11-22T19:15:00Z",
@@ -428,33 +456,44 @@ const MOCK_BOOKINGS: z.infer<typeof bookingSchema>[] = [
 // STATUS BADGES
 // ============================================================
 function StatusBadge({ status }: { status: string }) {
-  const statusConfig: Record<string, { icon: React.ReactNode; className: string }> = {
-    "Pending": { 
-      icon: <ClockIcon className="mr-1 h-3 w-3" />, 
-      className: "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-800" 
+  const statusConfig: Record<
+    string,
+    { icon: React.ReactNode; className: string }
+  > = {
+    Pending: {
+      icon: <ClockIcon className="mr-1 h-3 w-3" />,
+      className:
+        "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-800",
     },
-    "Confirmed": { 
-      icon: <CheckCircleIcon className="mr-1 h-3 w-3" />, 
-      className: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-800" 
+    Confirmed: {
+      icon: <CheckCircleIcon className="mr-1 h-3 w-3" />,
+      className:
+        "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-800",
     },
-    "In Progress": { 
-      icon: <LoaderIcon className="mr-1 h-3 w-3" />, 
-      className: "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/30 dark:text-blue-400 dark:border-blue-800" 
+    "In Progress": {
+      icon: <LoaderIcon className="mr-1 h-3 w-3" />,
+      className:
+        "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/30 dark:text-blue-400 dark:border-blue-800",
     },
-    "Completed": { 
-      icon: <CheckCircleIcon className="mr-1 h-3 w-3" />, 
-      className: "bg-teal-50 text-teal-700 border-teal-200 dark:bg-teal-950/30 dark:text-teal-400 dark:border-teal-800" 
+    Completed: {
+      icon: <CheckCircleIcon className="mr-1 h-3 w-3" />,
+      className:
+        "bg-teal-50 text-teal-700 border-teal-200 dark:bg-teal-950/30 dark:text-teal-400 dark:border-teal-800",
     },
-    "Cancelled": { 
-      icon: <XCircleIcon className="mr-1 h-3 w-3" />, 
-      className: "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/30 dark:text-rose-400 dark:border-rose-800" 
+    Cancelled: {
+      icon: <XCircleIcon className="mr-1 h-3 w-3" />,
+      className:
+        "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/30 dark:text-rose-400 dark:border-rose-800",
     },
   }
 
   const config = statusConfig[status] || statusConfig["Pending"]
 
   return (
-    <Badge variant="outline" className={`px-2.5 py-1 font-medium text-xs ${config.className}`}>
+    <Badge
+      variant="outline"
+      className={`px-2.5 py-1 text-xs font-medium ${config.className}`}
+    >
       {config.icon}
       {status}
     </Badge>
@@ -462,29 +501,39 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 function PaymentStatusBadge({ status }: { status: string }) {
-  const statusConfig: Record<string, { icon: React.ReactNode; className: string }> = {
-    "Paid": { 
-      icon: <CheckCircleIcon className="mr-1 h-3 w-3" />, 
-      className: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-800" 
+  const statusConfig: Record<
+    string,
+    { icon: React.ReactNode; className: string }
+  > = {
+    Paid: {
+      icon: <CheckCircleIcon className="mr-1 h-3 w-3" />,
+      className:
+        "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-800",
     },
-    "Deposit": { 
-      icon: <CreditCardIcon className="mr-1 h-3 w-3" />, 
-      className: "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/30 dark:text-blue-400 dark:border-blue-800" 
+    Deposit: {
+      icon: <CreditCardIcon className="mr-1 h-3 w-3" />,
+      className:
+        "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/30 dark:text-blue-400 dark:border-blue-800",
     },
-    "Pending": { 
-      icon: <ClockIcon className="mr-1 h-3 w-3" />, 
-      className: "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-800" 
+    Pending: {
+      icon: <ClockIcon className="mr-1 h-3 w-3" />,
+      className:
+        "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-800",
     },
-    "Failed": { 
-      icon: <XCircleIcon className="mr-1 h-3 w-3" />, 
-      className: "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/30 dark:text-rose-400 dark:border-rose-800" 
+    Failed: {
+      icon: <XCircleIcon className="mr-1 h-3 w-3" />,
+      className:
+        "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/30 dark:text-rose-400 dark:border-rose-800",
     },
   }
 
   const config = statusConfig[status] || statusConfig["Pending"]
 
   return (
-    <Badge variant="outline" className={`px-2.5 py-1 font-medium text-xs ${config.className}`}>
+    <Badge
+      variant="outline"
+      className={`px-2.5 py-1 text-xs font-medium ${config.className}`}
+    >
       {config.icon}
       {status}
     </Badge>
@@ -513,7 +562,13 @@ function DragHandle({ id }: { id: string }) {
   )
 }
 
-function SortableHeader({ column, children }: { column: any; children: React.ReactNode }) {
+function SortableHeader({
+  column,
+  children,
+}: {
+  column: Column<z.infer<typeof bookingSchema>, unknown>
+  children: React.ReactNode
+}) {
   const canSort = column.getCanSort()
 
   return (
@@ -521,7 +576,7 @@ function SortableHeader({ column, children }: { column: any; children: React.Rea
       variant="ghost"
       onClick={canSort ? column.getToggleSortingHandler() : undefined}
       className={cn(
-        "h-auto p-0 font-semibold hover:bg-transparent text-xs uppercase tracking-wider text-muted-foreground",
+        "h-auto p-0 text-xs font-semibold tracking-wider text-muted-foreground uppercase hover:bg-transparent",
         canSort && "cursor-pointer select-none"
       )}
     >
@@ -531,7 +586,9 @@ function SortableHeader({ column, children }: { column: any; children: React.Rea
           {{
             asc: <ChevronUpIcon className="h-3.5 w-3.5" />,
             desc: <ChevronDownIcon className="h-3.5 w-3.5" />,
-          }[column.getIsSorted() as string] ?? <ChevronDownIcon className="h-3.5 w-3.5 opacity-30" />}
+          }[column.getIsSorted() as string] ?? (
+            <ChevronDownIcon className="h-3.5 w-3.5 opacity-30" />
+          )}
         </span>
       )}
     </Button>
@@ -551,7 +608,7 @@ function DraggableRow({ row }: { row: Row<z.infer<typeof bookingSchema>> }) {
         transition: transition,
       }}
       className={cn(
-        "hover:bg-muted/30 transition-colors",
+        "transition-colors hover:bg-muted/30",
         isDragging && "bg-muted/50 shadow-lg"
       )}
     >
@@ -567,38 +624,42 @@ function DraggableRow({ row }: { row: Row<z.infer<typeof bookingSchema>> }) {
 // ============================================================
 // BOOKING DETAILS DIALOG
 // ============================================================
-function BookingDetailsDialog({ 
-  booking, 
-  open, 
-  onOpenChange 
-}: { 
-  booking: z.infer<typeof bookingSchema>;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+function BookingDetailsDialog({
+  booking,
+  open,
+  onOpenChange,
+}: {
+  booking: z.infer<typeof bookingSchema>
+  open: boolean
+  onOpenChange: (open: boolean) => void
 }) {
-  const [api, setApi] = React.useState<any>();
-  const [current, setCurrent] = React.useState(0);
-  const [count, setCount] = React.useState(0);
+  const [api, setApi] = React.useState<CarouselApi>()
+  const [current, setCurrent] = React.useState(0)
+  const [count, setCount] = React.useState(0)
 
   React.useEffect(() => {
-    if (!api) return;
-    setCount(api.scrollSnapList().length);
-    setCurrent(api.selectedScrollSnap());
-    api.on("select", () => {
-      setCurrent(api.selectedScrollSnap());
-    });
-  }, [api]);
+    if (!api) return
+    const updateCarousel = () => {
+      setCount(api.scrollSnapList().length)
+      setCurrent(api.selectedScrollSnap())
+    }
+    queueMicrotask(updateCarousel)
+    api.on("select", updateCarousel)
+    return () => {
+      api.off("select", updateCarousel)
+    }
+  }, [api])
 
   const infoCards = [
     {
-      id: 'overview',
+      id: "overview",
       icon: <IconUser className="h-5 w-5" />,
-      title: 'Overview',
+      title: "Overview",
       content: (
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1">
             <Label className="text-xs text-muted-foreground">Customer</Label>
-            <p className="font-medium flex items-center gap-2">
+            <p className="flex items-center gap-2 font-medium">
               <UserIcon className="h-3.5 w-3.5 text-muted-foreground" />
               {booking.customerName}
             </p>
@@ -616,31 +677,31 @@ function BookingDetailsDialog({
             <p className="font-medium">{booking.package}</p>
           </div>
         </div>
-      )
+      ),
     },
     {
-      id: 'contact',
+      id: "contact",
       icon: <IconMail className="h-5 w-5" />,
-      title: 'Contact Details',
+      title: "Contact Details",
       content: (
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1">
             <Label className="text-xs text-muted-foreground">Email</Label>
-            <p className="font-medium flex items-center gap-2">
+            <p className="flex items-center gap-2 font-medium">
               <MailIcon className="h-3.5 w-3.5 text-muted-foreground" />
               {booking.customerEmail}
             </p>
           </div>
           <div className="space-y-1">
             <Label className="text-xs text-muted-foreground">Phone</Label>
-            <p className="font-medium flex items-center gap-2">
+            <p className="flex items-center gap-2 font-medium">
               <PhoneIcon className="h-3.5 w-3.5 text-muted-foreground" />
               {booking.customerPhone}
             </p>
           </div>
-          <div className="space-y-1 col-span-2">
+          <div className="col-span-2 space-y-1">
             <Label className="text-xs text-muted-foreground">Location</Label>
-            <p className="font-medium flex items-center gap-2">
+            <p className="flex items-center gap-2 font-medium">
               <MapPinIcon className="h-3.5 w-3.5 text-muted-foreground" />
               {booking.location}
             </p>
@@ -650,24 +711,24 @@ function BookingDetailsDialog({
             <p className="font-medium">{booking.guests}</p>
           </div>
         </div>
-      )
+      ),
     },
     {
-      id: 'schedule',
+      id: "schedule",
       icon: <IconCalendarEvent className="h-5 w-5" />,
-      title: 'Schedule',
+      title: "Schedule",
       content: (
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1">
             <Label className="text-xs text-muted-foreground">Date</Label>
-            <p className="font-medium flex items-center gap-2">
+            <p className="flex items-center gap-2 font-medium">
               <CalendarIcon className="h-3.5 w-3.5 text-muted-foreground" />
-              {format(new Date(booking.eventDate), 'EEEE, MMMM d, yyyy')}
+              {format(new Date(booking.eventDate), "EEEE, MMMM d, yyyy")}
             </p>
           </div>
           <div className="space-y-1">
             <Label className="text-xs text-muted-foreground">Time</Label>
-            <p className="font-medium flex items-center gap-2">
+            <p className="flex items-center gap-2 font-medium">
               <ClockIcon className="h-3.5 w-3.5 text-muted-foreground" />
               {booking.eventTime}
             </p>
@@ -677,18 +738,18 @@ function BookingDetailsDialog({
             <p className="font-medium">{booking.duration} hours</p>
           </div>
         </div>
-      )
+      ),
     },
     {
-      id: 'addons',
+      id: "addons",
       icon: <IconPackage className="h-5 w-5" />,
-      title: 'Add-ons & Extras',
+      title: "Add-ons & Extras",
       content: (
         <div className="space-y-3">
           {booking.addons.length > 0 && (
             <div>
               <Label className="text-xs text-muted-foreground">Add-ons</Label>
-              <div className="flex flex-wrap gap-2 mt-1">
+              <div className="mt-1 flex flex-wrap gap-2">
                 {booking.addons.map((addon) => (
                   <Badge key={addon.id} variant="secondary" className="text-xs">
                     {addon.name} {addon.quantity && `×${addon.quantity}`}
@@ -700,7 +761,7 @@ function BookingDetailsDialog({
           {booking.prints.length > 0 && (
             <div>
               <Label className="text-xs text-muted-foreground">Prints</Label>
-              <div className="flex flex-wrap gap-2 mt-1">
+              <div className="mt-1 flex flex-wrap gap-2">
                 {booking.prints.map((print) => (
                   <Badge key={print.id} variant="outline" className="text-xs">
                     {print.name} ×{print.quantity}
@@ -712,66 +773,82 @@ function BookingDetailsDialog({
           {booking.templates.length > 0 && (
             <div>
               <Label className="text-xs text-muted-foreground">Templates</Label>
-              <div className="flex flex-wrap gap-2 mt-1">
+              <div className="mt-1 flex flex-wrap gap-2">
                 {booking.templates.map((template) => (
-                  <Badge key={template.id} variant="secondary" className="text-xs">
+                  <Badge
+                    key={template.id}
+                    variant="secondary"
+                    className="text-xs"
+                  >
                     {template.name}
                   </Badge>
                 ))}
               </div>
             </div>
           )}
-          {booking.addons.length === 0 && booking.prints.length === 0 && booking.templates.length === 0 && (
-            <div className="text-sm text-muted-foreground">No add-ons or extras selected</div>
-          )}
+          {booking.addons.length === 0 &&
+            booking.prints.length === 0 &&
+            booking.templates.length === 0 && (
+              <div className="text-sm text-muted-foreground">
+                No add-ons or extras selected
+              </div>
+            )}
         </div>
-      )
+      ),
     },
     {
-      id: 'notes',
+      id: "notes",
       icon: <IconSparkles className="h-5 w-5" />,
-      title: 'Notes',
+      title: "Notes",
       content: booking.notes ? (
-        <div className="p-4 bg-muted/30 rounded-lg border border-border">
+        <div className="rounded-lg border border-border bg-muted/30 p-4">
           <p className="text-sm leading-relaxed">{booking.notes}</p>
           {booking.staffAssigned && (
-            <div className="mt-3 pt-3 border-t border-border">
-              <Label className="text-xs text-muted-foreground">Staff Assigned</Label>
-              <p className="font-medium text-sm">{booking.staffAssigned}</p>
+            <div className="mt-3 border-t border-border pt-3">
+              <Label className="text-xs text-muted-foreground">
+                Staff Assigned
+              </Label>
+              <p className="text-sm font-medium">{booking.staffAssigned}</p>
             </div>
           )}
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
-          <IconSparkles className="h-12 w-12 mb-2 opacity-20" />
+          <IconSparkles className="mb-2 h-12 w-12 opacity-20" />
           <p className="text-sm">No notes</p>
         </div>
-      )
-    }
-  ];
+      ),
+    },
+  ]
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-0 gap-0 rounded-2xl shadow-2xl border-0">
+      <DialogContent className="flex max-h-[90vh] max-w-4xl flex-col gap-0 overflow-hidden rounded-2xl border-0 p-0 shadow-2xl">
         {/* Header */}
-        <div className="bg-gradient-to-r from-primary/5 via-primary/10 to-transparent border-b px-6 py-5">
+        <div className="border-b bg-gradient-to-r from-primary/5 via-primary/10 to-transparent px-6 py-5">
           <DialogHeader className="space-y-1">
             <div className="flex items-center justify-between">
               <div>
-                <DialogTitle className="text-2xl font-bold tracking-tight flex items-center gap-3">
+                <DialogTitle className="flex items-center gap-3 text-2xl font-bold tracking-tight">
                   {booking.bookingNumber}
                 </DialogTitle>
-                <DialogDescription className="flex items-center gap-3 mt-1.5 flex-wrap">
-                  <span className="font-medium text-foreground">{booking.customerName}</span>
+                <DialogDescription className="mt-1.5 flex flex-wrap items-center gap-3">
+                  <span className="font-medium text-foreground">
+                    {booking.customerName}
+                  </span>
                   <Separator orientation="vertical" className="h-4" />
                   <span className="text-sm">{booking.boothType}</span>
                   <Separator orientation="vertical" className="h-4" />
-                  <span className="text-sm text-muted-foreground">{booking.package}</span>
+                  <span className="text-sm text-muted-foreground">
+                    {booking.package}
+                  </span>
                 </DialogDescription>
               </div>
               <div className="text-right">
-                <div className="text-2xl font-bold text-primary">{booking.price}</div>
-                <div className="flex items-center gap-2 mt-1">
+                <div className="text-2xl font-bold text-primary">
+                  {booking.price}
+                </div>
+                <div className="mt-1 flex items-center gap-2">
                   <StatusBadge status={booking.status} />
                   <PaymentStatusBadge status={booking.paymentStatus} />
                 </div>
@@ -782,75 +859,82 @@ function BookingDetailsDialog({
 
         {/* Carousel */}
         <div className="flex-1 overflow-hidden px-6 py-4">
-          <Carousel setApi={setApi} className="w-full h-full">
+          <Carousel setApi={setApi} className="h-full w-full">
             <CarouselContent className="h-full">
               {infoCards.map((item) => (
                 <CarouselItem key={item.id} className="h-full">
                   <div className="h-full border-0 shadow-none">
                     <div className="flex items-center gap-2 pb-3">
-                      <div className="p-1.5 bg-primary/10 rounded-lg">
+                      <div className="rounded-lg bg-primary/10 p-1.5">
                         {item.icon}
                       </div>
-                      <h3 className="font-semibold text-lg">{item.title}</h3>
+                      <h3 className="text-lg font-semibold">{item.title}</h3>
                     </div>
-                    <div className="px-0 pb-0">
-                      {item.content}
-                    </div>
+                    <div className="px-0 pb-0">{item.content}</div>
                   </div>
                 </CarouselItem>
               ))}
             </CarouselContent>
-            
-            <CarouselPrevious className="absolute -left-3 top-1/2 -translate-y-1/2 h-8 w-8 border shadow-sm bg-background hover:bg-muted rounded-full" />
-            <CarouselNext className="absolute -right-3 top-1/2 -translate-y-1/2 h-8 w-8 border shadow-sm bg-background hover:bg-muted rounded-full" />
+
+            <CarouselPrevious className="absolute top-1/2 -left-3 h-8 w-8 -translate-y-1/2 rounded-full border bg-background shadow-sm hover:bg-muted" />
+            <CarouselNext className="absolute top-1/2 -right-3 h-8 w-8 -translate-y-1/2 rounded-full border bg-background shadow-sm hover:bg-muted" />
           </Carousel>
         </div>
 
         {/* Footer with indicators */}
-        <div className="border-t px-6 py-3 flex items-center justify-between bg-muted/10">
+        <div className="flex items-center justify-between border-t bg-muted/10 px-6 py-3">
           <div className="flex items-center gap-1.5">
             {Array.from({ length: count }).map((_, index) => (
               <button
                 key={index}
                 className={cn(
                   "h-1.5 rounded-full transition-all duration-300",
-                  index === current 
-                    ? "w-6 bg-primary" 
+                  index === current
+                    ? "w-6 bg-primary"
                     : "w-1.5 bg-muted-foreground/30 hover:bg-muted-foreground/50"
                 )}
                 onClick={() => api?.scrollTo(index)}
               />
             ))}
           </div>
-          <div className="text-xs text-muted-foreground font-medium">
+          <div className="text-xs font-medium text-muted-foreground">
             {current + 1} / {count}
           </div>
         </div>
       </DialogContent>
     </Dialog>
-  );
+  )
 }
 
 // ============================================================
 // MAIN COMPONENT
 // ============================================================
 export default function BookingDataTable() {
-  const [data, setData] = React.useState<z.infer<typeof bookingSchema>[]>(() => MOCK_BOOKINGS)
+  const [data, setData] = React.useState<z.infer<typeof bookingSchema>[]>(
+    () => MOCK_BOOKINGS
+  )
   const [rowSelection, setRowSelection] = React.useState({})
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({})
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  )
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [pagination, setPagination] = React.useState({
     pageIndex: 0,
     pageSize: 10,
   })
-  
-  const [selectedBooking, setSelectedBooking] = React.useState<z.infer<typeof bookingSchema> | null>(null)
+
+  const [selectedBooking, setSelectedBooking] = React.useState<z.infer<
+    typeof bookingSchema
+  > | null>(null)
   const [filterValue, setFilterValue] = React.useState("")
   const [isDialogOpen, setIsDialogOpen] = React.useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false)
-  const [bookingToDelete, setBookingToDelete] = React.useState<z.infer<typeof bookingSchema> | null>(null)
-  
+  const [bookingToDelete, setBookingToDelete] = React.useState<z.infer<
+    typeof bookingSchema
+  > | null>(null)
+
   const sortableId = React.useId()
   const sensors = useSensors(
     useSensor(MouseSensor, {}),
@@ -866,11 +950,12 @@ export default function BookingDataTable() {
   const filteredData = React.useMemo(() => {
     if (!filterValue) return data
     const lowerSearch = filterValue.toLowerCase()
-    return data.filter(booking => 
-      booking.bookingNumber.toLowerCase().includes(lowerSearch) ||
-      booking.customerName.toLowerCase().includes(lowerSearch) ||
-      booking.customerEmail.toLowerCase().includes(lowerSearch) ||
-      booking.location.toLowerCase().includes(lowerSearch)
+    return data.filter(
+      (booking) =>
+        booking.bookingNumber.toLowerCase().includes(lowerSearch) ||
+        booking.customerName.toLowerCase().includes(lowerSearch) ||
+        booking.customerEmail.toLowerCase().includes(lowerSearch) ||
+        booking.location.toLowerCase().includes(lowerSearch)
     )
   }, [data, filterValue])
 
@@ -893,7 +978,7 @@ export default function BookingDataTable() {
   const handleDelete = async (bookingId: string) => {
     try {
       toast.success("Booking deleted successfully")
-      setData(data.filter(b => b.id !== bookingId))
+      setData(data.filter((b) => b.id !== bookingId))
       setShowDeleteDialog(false)
       setBookingToDelete(null)
     } catch (error) {
@@ -901,133 +986,121 @@ export default function BookingDataTable() {
     }
   }
 
-  const columns: ColumnDef<z.infer<typeof bookingSchema>>[] = React.useMemo(() => [
-    {
-      id: "drag",
-      header: () => null,
-      cell: ({ row }) => <DragHandle id={row.original.id} />,
-      size: 40,
-    },
-    {
-      accessorKey: "bookingNumber",
-      header: ({ column }) => (
-        <SortableHeader column={column}>
-          Booking #
-        </SortableHeader>
-      ),
-      cell: ({ row }) => (
-        <Button
-          variant="link"
-          className="h-auto p-0 font-medium text-primary hover:text-primary/80"
-          onClick={() => onDialogOpen(row.original)}
-        >
-          {row.original.bookingNumber}
-        </Button>
-      ),
-    },
-    {
-      accessorKey: "customerName",
-      header: ({ column }) => (
-        <SortableHeader column={column}>
-          Customer
-        </SortableHeader>
-      ),
-      cell: ({ row }) => (
-        <div className="flex items-center gap-2">
-          <div className="font-medium">{row.original.customerName}</div>
-        </div>
-      ),
-    },
-    {
-      accessorKey: "eventDate",
-      header: ({ column }) => (
-        <SortableHeader column={column}>
-          Date
-        </SortableHeader>
-      ),
-      cell: ({ row }) => (
-        <div className="text-sm">
-          {format(new Date(row.original.eventDate), 'MMM d, yyyy')}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "boothType",
-      header: ({ column }) => (
-        <SortableHeader column={column}>
-          Type
-        </SortableHeader>
-      ),
-      cell: ({ row }) => (
-        <Badge variant="secondary" className="font-normal text-xs">
-          {row.original.boothType}
-        </Badge>
-      ),
-    },
-    {
-      accessorKey: "price",
-      header: ({ column }) => (
-        <SortableHeader column={column}>
-          Price
-        </SortableHeader>
-      ),
-      cell: ({ row }) => (
-        <div className="font-semibold text-primary">{row.original.price}</div>
-      ),
-    },
-    {
-      accessorKey: "status",
-      header: ({ column }) => (
-        <SortableHeader column={column}>
-          Status
-        </SortableHeader>
-      ),
-      cell: ({ row }) => <StatusBadge status={row.original.status} />,
-    },
-    {
-      accessorKey: "paymentStatus",
-      header: ({ column }) => (
-        <SortableHeader column={column}>
-          Payment
-        </SortableHeader>
-      ),
-      cell: ({ row }) => <PaymentStatusBadge status={row.original.paymentStatus} />,
-    },
-    {
-      id: "actions",
-      cell: ({ row }) => (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              className="size-8 p-0 hover:bg-muted"
-            >
-              <EllipsisVerticalIcon className="h-4 w-4" />
-              <span className="sr-only">Open menu</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuItem onClick={() => onDialogOpen(row.original)}>
-              <IconEye className="mr-2 h-4 w-4" />
-              View Details
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem 
-              onClick={() => {
-                setBookingToDelete(row.original)
-                setShowDeleteDialog(true)
-              }}
-              className="text-destructive focus:text-destructive"
-            >
-              <IconTrash className="mr-2 h-4 w-4" />
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ),
-      size: 50,
-    },
-  ], [])
+  const columns: ColumnDef<z.infer<typeof bookingSchema>>[] = React.useMemo(
+    () => [
+      {
+        id: "drag",
+        header: () => null,
+        cell: ({ row }) => <DragHandle id={row.original.id} />,
+        size: 40,
+      },
+      {
+        accessorKey: "bookingNumber",
+        header: ({ column }) => (
+          <SortableHeader column={column}>Booking #</SortableHeader>
+        ),
+        cell: ({ row }) => (
+          <Button
+            variant="link"
+            className="h-auto p-0 font-medium text-primary hover:text-primary/80"
+            onClick={() => onDialogOpen(row.original)}
+          >
+            {row.original.bookingNumber}
+          </Button>
+        ),
+      },
+      {
+        accessorKey: "customerName",
+        header: ({ column }) => (
+          <SortableHeader column={column}>Customer</SortableHeader>
+        ),
+        cell: ({ row }) => (
+          <div className="flex items-center gap-2">
+            <div className="font-medium">{row.original.customerName}</div>
+          </div>
+        ),
+      },
+      {
+        accessorKey: "eventDate",
+        header: ({ column }) => (
+          <SortableHeader column={column}>Date</SortableHeader>
+        ),
+        cell: ({ row }) => (
+          <div className="text-sm">
+            {format(new Date(row.original.eventDate), "MMM d, yyyy")}
+          </div>
+        ),
+      },
+      {
+        accessorKey: "boothType",
+        header: ({ column }) => (
+          <SortableHeader column={column}>Type</SortableHeader>
+        ),
+        cell: ({ row }) => (
+          <Badge variant="secondary" className="text-xs font-normal">
+            {row.original.boothType}
+          </Badge>
+        ),
+      },
+      {
+        accessorKey: "price",
+        header: ({ column }) => (
+          <SortableHeader column={column}>Price</SortableHeader>
+        ),
+        cell: ({ row }) => (
+          <div className="font-semibold text-primary">{row.original.price}</div>
+        ),
+      },
+      {
+        accessorKey: "status",
+        header: ({ column }) => (
+          <SortableHeader column={column}>Status</SortableHeader>
+        ),
+        cell: ({ row }) => <StatusBadge status={row.original.status} />,
+      },
+      {
+        accessorKey: "paymentStatus",
+        header: ({ column }) => (
+          <SortableHeader column={column}>Payment</SortableHeader>
+        ),
+        cell: ({ row }) => (
+          <PaymentStatusBadge status={row.original.paymentStatus} />
+        ),
+      },
+      {
+        id: "actions",
+        cell: ({ row }) => (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="size-8 p-0 hover:bg-muted">
+                <EllipsisVerticalIcon className="h-4 w-4" />
+                <span className="sr-only">Open menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={() => onDialogOpen(row.original)}>
+                <IconEye className="mr-2 h-4 w-4" />
+                View Details
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => {
+                  setBookingToDelete(row.original)
+                  setShowDeleteDialog(true)
+                }}
+                className="text-destructive focus:text-destructive"
+              >
+                <IconTrash className="mr-2 h-4 w-4" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ),
+        size: 50,
+      },
+    ],
+    []
+  )
 
   const table = useReactTable({
     data: filteredData,
@@ -1056,9 +1129,9 @@ export default function BookingDataTable() {
 
   return (
     <TooltipProvider>
-      <div className="w-full max-w-7xl mx-auto p-4 md:p-6 space-y-4">
+      <div className="mx-auto w-full max-w-7xl space-y-4 p-4 md:p-6">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Bookings</h1>
             <p className="text-sm text-muted-foreground">
@@ -1069,11 +1142,11 @@ export default function BookingDataTable() {
             <div className="relative">
               <Input
                 placeholder="Search bookings..."
-                className="h-9 w-[200px] lg:w-[300px] pl-9 rounded-xl"
+                className="h-9 w-[200px] rounded-xl pl-9 lg:w-[300px]"
                 value={filterValue}
                 onChange={(e) => setFilterValue(e.target.value)}
               />
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+              <div className="absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground">
                 <IconEye className="h-4 w-4" />
               </div>
             </div>
@@ -1081,7 +1154,7 @@ export default function BookingDataTable() {
         </div>
 
         {/* Table */}
-        <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
+        <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
           <DndContext
             collisionDetection={closestCenter}
             modifiers={[restrictToVerticalAxis]}
@@ -1092,7 +1165,10 @@ export default function BookingDataTable() {
             <Table>
               <TableHeader className="bg-muted/30">
                 {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id} className="hover:bg-transparent">
+                  <TableRow
+                    key={headerGroup.id}
+                    className="hover:bg-transparent"
+                  >
                     {headerGroup.headers.map((header) => (
                       <TableHead key={header.id} className="py-3">
                         {header.isPlaceholder
@@ -1108,18 +1184,26 @@ export default function BookingDataTable() {
               </TableHeader>
               <TableBody>
                 {table.getRowModel().rows?.length ? (
-                  <SortableContext items={dataIds} strategy={verticalListSortingStrategy}>
+                  <SortableContext
+                    items={dataIds}
+                    strategy={verticalListSortingStrategy}
+                  >
                     {table.getRowModel().rows.map((row) => (
                       <DraggableRow key={row.id} row={row} />
                     ))}
                   </SortableContext>
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={columns.length} className="h-32 text-center">
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-32 text-center"
+                    >
                       <div className="flex flex-col items-center justify-center text-muted-foreground">
-                        <IconCalendarEvent className="h-12 w-12 mb-2 opacity-20" />
+                        <IconCalendarEvent className="mb-2 h-12 w-12 opacity-20" />
                         <p className="text-sm font-medium">No bookings found</p>
-                        <p className="text-xs">Try adjusting your search or filters</p>
+                        <p className="text-xs">
+                          Try adjusting your search or filters
+                        </p>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -1130,14 +1214,17 @@ export default function BookingDataTable() {
         </div>
 
         {/* Pagination */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
           <div className="text-sm text-muted-foreground">
             {table.getFilteredSelectedRowModel().rows.length} of{" "}
             {table.getFilteredRowModel().rows.length} booking(s) selected.
           </div>
           <div className="flex items-center gap-2">
             <div className="flex items-center space-x-2">
-              <Label htmlFor="rows-per-page" className="text-sm text-muted-foreground">
+              <Label
+                htmlFor="rows-per-page"
+                className="text-sm text-muted-foreground"
+              >
                 Rows
               </Label>
               <Select
@@ -1147,7 +1234,9 @@ export default function BookingDataTable() {
                 }}
               >
                 <SelectTrigger className="h-8 w-[70px] rounded-lg">
-                  <SelectValue placeholder={table.getState().pagination.pageSize} />
+                  <SelectValue
+                    placeholder={table.getState().pagination.pageSize}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {[10, 20, 30, 40, 50].map((pageSize) => (
@@ -1165,7 +1254,7 @@ export default function BookingDataTable() {
             <div className="flex items-center gap-1">
               <Button
                 variant="outline"
-                className="hidden h-8 w-8 p-0 lg:flex rounded-lg"
+                className="hidden h-8 w-8 rounded-lg p-0 lg:flex"
                 onClick={() => table.setPageIndex(0)}
                 disabled={!table.getCanPreviousPage()}
               >
@@ -1174,7 +1263,7 @@ export default function BookingDataTable() {
               </Button>
               <Button
                 variant="outline"
-                className="h-8 w-8 p-0 rounded-lg"
+                className="h-8 w-8 rounded-lg p-0"
                 onClick={() => table.previousPage()}
                 disabled={!table.getCanPreviousPage()}
               >
@@ -1183,7 +1272,7 @@ export default function BookingDataTable() {
               </Button>
               <Button
                 variant="outline"
-                className="h-8 w-8 p-0 rounded-lg"
+                className="h-8 w-8 rounded-lg p-0"
                 onClick={() => table.nextPage()}
                 disabled={!table.getCanNextPage()}
               >
@@ -1192,7 +1281,7 @@ export default function BookingDataTable() {
               </Button>
               <Button
                 variant="outline"
-                className="hidden h-8 w-8 p-0 lg:flex rounded-lg"
+                className="hidden h-8 w-8 rounded-lg p-0 lg:flex"
                 onClick={() => table.setPageIndex(table.getPageCount() - 1)}
                 disabled={!table.getCanNextPage()}
               >
@@ -1205,21 +1294,30 @@ export default function BookingDataTable() {
 
         {/* Delete Confirmation Dialog */}
         <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-          <DialogContent className="sm:max-w-md rounded-2xl">
+          <DialogContent className="rounded-2xl sm:max-w-md">
             <DialogHeader>
               <DialogTitle className="text-xl">Delete Booking</DialogTitle>
               <DialogDescription>
-                Are you sure you want to delete booking <span className="font-medium text-foreground">{bookingToDelete?.bookingNumber}</span>? 
-                This action cannot be undone.
+                Are you sure you want to delete booking{" "}
+                <span className="font-medium text-foreground">
+                  {bookingToDelete?.bookingNumber}
+                </span>
+                ? This action cannot be undone.
               </DialogDescription>
             </DialogHeader>
             <div className="flex justify-end gap-2 pt-2">
-              <Button variant="outline" onClick={() => setShowDeleteDialog(false)} className="rounded-xl">
+              <Button
+                variant="outline"
+                onClick={() => setShowDeleteDialog(false)}
+                className="rounded-xl"
+              >
                 Cancel
               </Button>
-              <Button 
-                variant="destructive" 
-                onClick={() => bookingToDelete && handleDelete(bookingToDelete.id)}
+              <Button
+                variant="destructive"
+                onClick={() =>
+                  bookingToDelete && handleDelete(bookingToDelete.id)
+                }
                 className="rounded-xl"
               >
                 Delete Booking
@@ -1230,7 +1328,7 @@ export default function BookingDataTable() {
 
         {/* Booking Details Dialog */}
         {selectedBooking && (
-          <BookingDetailsDialog 
+          <BookingDetailsDialog
             booking={selectedBooking}
             open={isDialogOpen}
             onOpenChange={setIsDialogOpen}

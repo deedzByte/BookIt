@@ -1,490 +1,358 @@
-"use client";
+"use client"
 
-import { useMemo, useRef, useEffect, useState, useCallback } from "react";
+import { useCallback, useMemo, useRef, useState, useEffect } from "react"
 import Map, {
+  GeolocateControl,
   Marker,
   NavigationControl,
-  GeolocateControl,
-  FullscreenControl,
   ScaleControl,
-  MapRef,
-} from "react-map-gl/mapbox";
-import "mapbox-gl/dist/mapbox-gl.css";
-
+  type MapRef,
+} from "react-map-gl/mapbox"
 import {
   Camera,
-  ShoppingBag,
-  Shirt,
-  Briefcase,
   Car,
-} from "lucide-react";
+  LocateFixed,
+  MapPin,
+  Search,
+  ShoppingBag,
+  Star,
+  X,
+} from "lucide-react"
+import "mapbox-gl/dist/mapbox-gl.css"
 
-import { getDirections } from "@/lib/mapbox";
-import CategoryFilter from "./maps/CategoryFilter";
-import FloatingControls from "./maps/FloatingControls";
-import MapMarker from "./maps/MapMarker";
-import NavigationHeader from "./maps/NavigationHeader";
-import RouteLayer from "./maps/RouteLayer";
-import SearchBar from "./maps/SearchBar";
-import VoiceNavigation from "./maps/VoiceNavigation";
+import { getDirections, type DirectionsRoute } from "@/lib/mapbox"
+import RouteLayer from "@/components/maps/RouteLayer"
 
-interface Service {
-  id: number;
-  latitude: number;
-  longitude: number;
-  title: string;
-  icon: "camera" | "shop" | "clothes" | "business" | "car";
-  rating?: number;
-  reviews?: number;
-  phone?: string;
+export interface MapService {
+  id: number
+  latitude: number
+  longitude: number
+  title: string
+  icon: "camera" | "shop" | "clothes" | "business" | "car"
+  rating?: number
+  reviews?: number
+  phone?: string
 }
 
 interface ProviderMapProps {
-  selectedService?: Service | null;
-  autoNavigate?: boolean;
-  onClose?: () => void;
-  showControls?: boolean;
-  showSearch?: boolean;
-  showFilters?: boolean;
-  clientLocation?: {
-    latitude: number;
-    longitude: number;
-  };
+  selectedService?: MapService | null
+  autoNavigate?: boolean
+  onClose?: () => void
+  showControls?: boolean
+  showSearch?: boolean
+  showFilters?: boolean
+  clientLocation?: { latitude: number; longitude: number }
 }
 
-const defaultServices: Service[] = [
+const services: MapService[] = [
   {
     id: 1,
     latitude: -17.8255,
     longitude: 31.0338,
-    title: "Photography",
+    title: "ZimLens Studio",
     icon: "camera",
     rating: 4.9,
     reviews: 128,
-    phone: "+263 77 123 4567",
   },
   {
     id: 2,
     latitude: -17.819,
     longitude: 31.041,
-    title: "Shop",
+    title: "Crafted ZW",
     icon: "shop",
     rating: 4.7,
     reviews: 95,
-    phone: "+263 77 234 5678",
   },
   {
     id: 3,
     latitude: -17.821,
     longitude: 31.048,
-    title: "Fashion",
-    icon: "clothes",
+    title: "Pulse Events",
+    icon: "business",
     rating: 4.8,
     reviews: 203,
-    phone: "+263 77 345 6789",
   },
   {
     id: 4,
     latitude: -17.831,
     longitude: 31.038,
-    title: "Business",
-    icon: "business",
+    title: "Harare Transport",
+    icon: "car",
     rating: 4.6,
     reviews: 67,
-    phone: "+263 77 456 7890",
   },
-  {
-    id: 5,
-    latitude: -17.833,
-    longitude: 31.029,
-    title: "Transport",
-    icon: "car",
-    rating: 4.5,
-    reviews: 154,
-    phone: "+263 77 567 8901",
-  },
-];
+]
 
-// Default client location
-const defaultClientLocation = {
-  latitude: -17.828,
-  longitude: 31.036,
-};
+const defaultClientLocation = { latitude: -17.828, longitude: 31.036 }
 
-export default function ProviderMap({ 
-  selectedService: externalSelectedService = null,
+export default function ProviderMap({
+  selectedService: initialService = null,
   autoNavigate = false,
   onClose,
   showControls = true,
   showSearch = true,
-  showFilters = true,
   clientLocation = defaultClientLocation,
 }: ProviderMapProps) {
-  const mapRef = useRef<MapRef>(null);
-  const [selectedService, setSelectedService] = useState<Service | null>(externalSelectedService);
-  const [route, setRoute] = useState<any>(null);
-  const [routeData, setRouteData] = useState<any>(null);
-  const [distance, setDistance] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [steps, setSteps] = useState<any[]>([]);
-  const [currentStepIndex, setCurrentStepIndex] = useState(0);
-  const [isNavigating, setIsNavigating] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
-  const [isVoiceReady, setIsVoiceReady] = useState(false);
+  const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN
+  const mapRef = useRef<MapRef>(null)
+  const [query, setQuery] = useState("")
+  const [selected, setSelected] = useState<MapService | null>(initialService)
+  const [route, setRoute] = useState<DirectionsRoute | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [routeError, setRouteError] = useState("")
 
-  const center = useMemo(
-    () => ({
-      latitude: -17.8252,
-      longitude: 31.0335,
-    }),
-    []
-  );
+  const visibleServices = useMemo(() => {
+    const needle = query.trim().toLowerCase()
+    return services.filter(
+      (service) => !needle || service.title.toLowerCase().includes(needle)
+    )
+  }, [query])
 
-  // Update selected service from props
-  useEffect(() => {
-    if (externalSelectedService) {
-      setSelectedService(externalSelectedService);
-    }
-  }, [externalSelectedService]);
+  const focusService = useCallback((service: MapService) => {
+    setSelected(service)
+    mapRef.current?.flyTo({
+      center: [service.longitude, service.latitude],
+      zoom: 15.5,
+      pitch: 42,
+      duration: 900,
+    })
+  }, [])
 
-  const getIcon = (icon: Service["icon"]) => {
-    switch (icon) {
-      case "camera":
-        return <Camera size={24} />;
-      case "shop":
-        return <ShoppingBag size={24} />;
-      case "clothes":
-        return <Shirt size={24} />;
-      case "business":
-        return <Briefcase size={24} />;
-      default:
-        return <Car size={24} />;
-    }
-  };
-
-  const getColor = (icon: Service["icon"]) => {
-    switch (icon) {
-      case "camera":
-        return "sky";
-      case "shop":
-        return "emerald";
-      case "clothes":
-        return "purple";
-      case "business":
-        return "sky";
-      default:
-        return "emerald";
-    }
-  };
-
-  // Load voice synthesis voices
-  useEffect(() => {
-    if ('speechSynthesis' in window) {
-      const loadVoices = () => {
-        window.speechSynthesis.getVoices();
-        setIsVoiceReady(true);
-      };
-      
-      loadVoices();
-      window.speechSynthesis.onvoiceschanged = loadVoices;
-      
-      return () => {
-        window.speechSynthesis.onvoiceschanged = null;
-      };
-    }
-  }, []);
-
-  const loadRoute = useCallback(async (service: Service) => {
-    setIsLoading(true);
-    try {
-      const result = await getDirections(
-        [service.longitude, service.latitude],
-        [clientLocation.longitude, clientLocation.latitude]
-      );
-
-      setRoute({
-        type: "Feature",
-        geometry: result.geometry,
-      });
-
-      setRouteData(result);
-      setDistance(result.distance);
-      setDuration(result.duration);
-      
-      // Extract steps for voice navigation
-      if (result.legs && result.legs.length > 0) {
-        const allSteps = result.legs.flatMap((leg: any) => leg.steps || []);
-        setSteps(allSteps);
-        setCurrentStepIndex(0);
+  const buildRoute = useCallback(
+    async (service: MapService) => {
+      focusService(service)
+      setLoading(true)
+      setRouteError("")
+      try {
+        const nextRoute = await getDirections(
+          [clientLocation.longitude, clientLocation.latitude],
+          [service.longitude, service.latitude]
+        )
+        setRoute(nextRoute)
+        mapRef.current?.fitBounds(
+          [
+            [
+              Math.min(clientLocation.longitude, service.longitude),
+              Math.min(clientLocation.latitude, service.latitude),
+            ],
+            [
+              Math.max(clientLocation.longitude, service.longitude),
+              Math.max(clientLocation.latitude, service.latitude),
+            ],
+          ],
+          { padding: 100, duration: 900 }
+        )
+      } catch {
+        setRouteError("Add a valid Mapbox token to calculate live directions.")
+      } finally {
+        setLoading(false)
       }
-      
-      // Start navigation automatically
-      setIsNavigating(true);
-      
-    } catch (err) {
-      console.error("Error loading route:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [clientLocation]);
+    },
+    [clientLocation, focusService]
+  )
 
-  const handleServiceSelect = (service: Service) => {
-    setSelectedService(service);
-    loadRoute(service);
-  };
-
-  const handleNextStep = () => {
-    if (currentStepIndex < steps.length - 1) {
-      setCurrentStepIndex(currentStepIndex + 1);
-      
-      // Update camera to focus on next step
-      if (mapRef.current && steps[currentStepIndex + 1]?.geometry?.coordinates) {
-        const coords = steps[currentStepIndex + 1].geometry.coordinates;
-        mapRef.current.flyTo({
-          center: coords,
-          zoom: 16,
-          duration: 800,
-        });
-      }
-    }
-  };
-
-  const handlePreviousStep = () => {
-    if (currentStepIndex > 0) {
-      setCurrentStepIndex(currentStepIndex - 1);
-      
-      // Update camera to focus on previous step
-      if (mapRef.current && steps[currentStepIndex - 1]?.geometry?.coordinates) {
-        const coords = steps[currentStepIndex - 1].geometry.coordinates;
-        mapRef.current.flyTo({
-          center: coords,
-          zoom: 16,
-          duration: 800,
-        });
-      }
-    }
-  };
-
-  const handleStopNavigation = () => {
-    setIsNavigating(false);
-    setRoute(null);
-    setRouteData(null);
-    setSteps([]);
-    setCurrentStepIndex(0);
-    setSelectedService(null);
-    
-    // Cancel any ongoing speech
-    if (window.speechSynthesis) {
-      window.speechSynthesis.cancel();
-    }
-    
-    // Reset camera
-    if (mapRef.current) {
-      mapRef.current.flyTo({
-        center: [31.0335, -17.8252],
-        zoom: 14,
-        pitch: 45,
-        duration: 1500,
-      });
-    }
-
-    // Call onClose callback if provided
-    if (onClose) {
-      onClose();
-    }
-  };
-
-  const handleCloseNavigation = () => {
-    handleStopNavigation();
-  };
-
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-  };
-
-  const handleCategoryChange = (category: string) => {
-    setSelectedCategory(category);
-  };
-
-  const filteredServices = useMemo(() => {
-    let filtered = defaultServices;
-
-    if (selectedCategory !== "all") {
-      filtered = filtered.filter((s) => s.icon === selectedCategory);
-    }
-
-    if (searchQuery) {
-      filtered = filtered.filter((s) =>
-        s.title.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    return filtered;
-  }, [selectedCategory, searchQuery]);
-
-  // Auto-navigate when selectedService changes from props
   useEffect(() => {
-    if (autoNavigate && externalSelectedService && !isNavigating) {
-      handleServiceSelect(externalSelectedService);
-    }
-  }, [autoNavigate, externalSelectedService, isNavigating]);
+    if (!initialService || !mapboxToken) return
+    queueMicrotask(() => {
+      if (autoNavigate) void buildRoute(initialService)
+      else focusService(initialService)
+    })
+  }, [autoNavigate, buildRoute, focusService, initialService, mapboxToken])
 
-  // Initial fly to center
-  useEffect(() => {
-    if (!mapRef.current) return;
+  function resetMap() {
+    setRoute(null)
+    setSelected(null)
+    setRouteError("")
+    mapRef.current?.flyTo({
+      center: [31.036, -17.825],
+      zoom: 13.5,
+      pitch: 25,
+      duration: 700,
+    })
+    onClose?.()
+  }
 
-    setTimeout(() => {
-      mapRef.current?.flyTo({
-        center: [31.0335, -17.8252],
-        zoom: 14,
-        pitch: 45,
-        bearing: 0,
-        duration: 2000,
-      });
-    }, 100);
-  }, []);
-
-  // Cancel speech on unmount
-  useEffect(() => {
-    return () => {
-      if (window.speechSynthesis) {
-        window.speechSynthesis.cancel();
-      }
-    };
-  }, []);
+  if (!mapboxToken) {
+    return (
+      <section className="flex min-h-[620px] items-center justify-center bg-[radial-gradient(circle_at_top,#d9e8e1,#eef2ef_55%,#dce4df)] px-4">
+        <div className="max-w-xl rounded-3xl border border-white/80 bg-white/90 p-8 text-center shadow-2xl backdrop-blur-xl">
+          <span className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-[#173f36] text-white"><MapPin className="size-6" /></span>
+          <h1 className="mt-5 text-2xl font-semibold">Connect your Mapbox map</h1>
+          <p className="mt-3 leading-7 text-zinc-600">The modern provider map is ready. Add <code className="rounded bg-zinc-100 px-1.5 py-1 text-sm">NEXT_PUBLIC_MAPBOX_TOKEN</code> to <code className="rounded bg-zinc-100 px-1.5 py-1 text-sm">.env.local</code>, then restart the development server.</p>
+          <p className="mt-4 text-sm text-zinc-500">This fallback prevents runtime and hydration errors while the token is not configured.</p>
+        </div>
+      </section>
+    )
+  }
 
   return (
-    <div className="relative h-full w-full overflow-hidden bg-gray-100">
+    <section className="relative h-[calc(100dvh-4rem)] min-h-[620px] w-full overflow-hidden bg-[#e8eee9] sm:h-[calc(100dvh-5rem)]">
       <Map
         ref={mapRef}
-        mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
+        mapboxAccessToken={mapboxToken}
         initialViewState={{
-          latitude: center.latitude,
-          longitude: center.longitude,
-          zoom: 13,
-          pitch: 45,
+          latitude: -17.8252,
+          longitude: 31.036,
+          zoom: 13.5,
+          pitch: 25,
         }}
-        mapStyle="mapbox://styles/mapbox/light-v11"
-        interactiveLayerIds={["route-line"]}
+        mapStyle="mapbox://styles/mapbox/standard"
+        reuseMaps
       >
-        <NavigationControl position="top-right" />
-        <FullscreenControl position="top-right" />
-        <GeolocateControl position="top-right" trackUserLocation />
-        <ScaleControl position="bottom-right" />
+        {showControls && (
+          <NavigationControl position="bottom-right" showCompass />
+        )}
+        {showControls && (
+          <GeolocateControl
+            position="bottom-right"
+            trackUserLocation
+            showUserHeading
+          />
+        )}
+        <ScaleControl position="bottom-left" />
+        <RouteLayer
+          route={route ? { type: "Feature", geometry: route.geometry } : null}
+          mapRef={mapRef}
+        />
 
-        {/* Route */}
-        <RouteLayer route={route} mapRef={mapRef} />
-
-        {/* Service Markers - Hide when navigating */}
-        {!isNavigating && filteredServices.map((service) => (
+        {visibleServices.map((service) => (
           <Marker
             key={service.id}
             latitude={service.latitude}
             longitude={service.longitude}
             anchor="bottom"
           >
-            <MapMarker
-              isSelected={selectedService?.id === service.id}
-              onClick={() => handleServiceSelect(service)}
-              label={service.title}
-              color={getColor(service.icon)}
+            <button
+              onClick={() => focusService(service)}
+              aria-label={`View ${service.title}`}
+              className={`group flex size-12 items-center justify-center rounded-2xl border-2 border-white shadow-xl transition hover:-translate-y-1 ${selected?.id === service.id ? "bg-[#f2c14e] text-[#173f36]" : "bg-[#173f36] text-white"}`}
             >
-              {getIcon(service.icon)}
-            </MapMarker>
+              {service.icon === "camera" ? (
+                <Camera className="size-5" />
+              ) : service.icon === "shop" ? (
+                <ShoppingBag className="size-5" />
+              ) : (
+                <Car className="size-5" />
+              )}
+            </button>
           </Marker>
         ))}
 
-        {/* Client Marker */}
         <Marker
           latitude={clientLocation.latitude}
           longitude={clientLocation.longitude}
           anchor="center"
         >
-          <div className="relative">
-            <div className="absolute inset-0 h-12 w-12 -translate-x-3 -translate-y-3 rounded-full bg-sky-500/20 animate-ping" />
-            <div className="relative h-6 w-6 rounded-full border-4 border-white bg-sky-500 shadow-xl">
-              <div className="absolute inset-0 rounded-full bg-white/20" />
-            </div>
+          <div className="relative flex size-8 items-center justify-center rounded-full border-4 border-white bg-blue-500 shadow-xl">
+            <span className="absolute size-12 animate-ping rounded-full bg-blue-500/20" />
           </div>
         </Marker>
       </Map>
 
-      {/* Navigation Header - Show when navigating */}
-      {isNavigating && selectedService && (
-        <NavigationHeader
-          destination={selectedService.title}
-          distance={distance}
-          duration={duration}
-          onClose={handleCloseNavigation}
-        />
-      )}
-
-      {/* Search & Filters - Hide when navigating */}
-      {!isNavigating && showSearch && (
-        <SearchBar value={searchQuery} onChange={handleSearch} />
-      )}
-      
-      {/* {!isNavigating && showFilters && (
-        <CategoryFilter
-          selected={selectedCategory}
-          onChange={handleCategoryChange}
-        />
-      )} */}
-      
-      {/* {!isNavigating && showControls && (
-        <FloatingControls
-          onLocate={() => {
-            if (mapRef.current) {
-              mapRef.current.flyTo({
-                center: [31.0335, -17.8252],
-                zoom: 14,
-                pitch: 45,
-                duration: 1500,
-              });
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 p-3 sm:p-5">
+        <div className="pointer-events-auto mx-auto flex max-w-3xl items-center gap-2 rounded-2xl border border-white/70 bg-white/90 p-2 shadow-xl backdrop-blur-xl">
+          <Search className="ml-3 size-5 text-zinc-400" />
+          {showSearch && (
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Search providers on the map"
+              className="min-h-11 min-w-0 flex-1 bg-transparent text-base outline-none"
+            />
+          )}
+          <button
+            onClick={() =>
+              mapRef.current?.flyTo({
+                center: [clientLocation.longitude, clientLocation.latitude],
+                zoom: 15,
+                duration: 700,
+              })
             }
-          }}
-          onZoomIn={() => {
-            if (mapRef.current) {
-              const zoom = mapRef.current.getZoom();
-              mapRef.current.zoomTo(zoom + 1, { duration: 300 });
-            }
-          }}
-          onZoomOut={() => {
-            if (mapRef.current) {
-              const zoom = mapRef.current.getZoom();
-              mapRef.current.zoomTo(zoom - 1, { duration: 300 });
-            }
-          }}
-        />
-      )} */}
-
-      {/* Voice Navigation - Show when navigating */}
-      {isNavigating && steps.length > 0 && (
-        <VoiceNavigation
-          steps={steps}
-          currentStepIndex={currentStepIndex}
-          onNext={handleNextStep}
-          onPrevious={handlePreviousStep}
-          isNavigating={isNavigating}
-          distance={distance}
-          duration={duration}
-          onStop={handleStopNavigation}
-        />
-      )}
-
-      {/* Loading Indicator */}
-      {isLoading && (
-        <div className="absolute bottom-32 left-1/2 -translate-x-1/2 rounded-full bg-white/90 px-4 py-2 shadow-lg backdrop-blur">
-          <div className="flex items-center gap-2">
-            <div className="h-5 w-5 animate-spin rounded-full border-2 border-sky-500 border-t-transparent" />
-            <span className="text-sm font-medium text-gray-700">
-              Finding route...
-            </span>
-          </div>
+            aria-label="Centre on my location"
+            className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-[#173f36] text-white"
+          >
+            <LocateFixed className="size-5" />
+          </button>
         </div>
-      )}
-    </div>
-  );
+      </div>
+
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 p-3 sm:p-5">
+        <div className="pointer-events-auto mx-auto max-w-xl">
+          {routeError && (
+            <p className="mb-2 rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700 shadow">
+              {routeError}
+            </p>
+          )}
+          {selected ? (
+            <article className="rounded-3xl border border-white/70 bg-white/95 p-5 shadow-2xl backdrop-blur-xl">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-xs font-bold tracking-wide text-[#25705f] uppercase">
+                    Nearby provider
+                  </p>
+                  <h1 className="mt-1 text-xl font-semibold">
+                    {selected.title}
+                  </h1>
+                  <p className="mt-2 flex items-center gap-3 text-sm text-zinc-500">
+                    <span className="flex items-center gap-1">
+                      <Star className="size-4 fill-amber-400 text-amber-400" />
+                      {selected.rating ?? "New"}
+                    </span>
+                    <span>{selected.reviews ?? 0} reviews</span>
+                  </p>
+                </div>
+                <button
+                  onClick={resetMap}
+                  aria-label="Close provider details"
+                  className="flex size-11 items-center justify-center rounded-full bg-zinc-100"
+                >
+                  <X className="size-5" />
+                </button>
+              </div>
+              {route && (
+                <div className="mt-4 grid grid-cols-2 gap-2 rounded-2xl bg-[#f4f6f3] p-3 text-sm">
+                  <span>
+                    <strong>{(route.distance / 1000).toFixed(1)} km</strong>
+                    <br />
+                    <span className="text-zinc-500">Distance</span>
+                  </span>
+                  <span>
+                    <strong>
+                      {Math.max(1, Math.round(route.duration / 60))} min
+                    </strong>
+                    <br />
+                    <span className="text-zinc-500">Drive time</span>
+                  </span>
+                </div>
+              )}
+              <button
+                disabled={loading}
+                onClick={() => void buildRoute(selected)}
+                className="mt-4 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#173f36] px-5 font-semibold text-white disabled:opacity-60"
+              >
+                <MapPin className="size-5" />
+                {loading
+                  ? "Calculating route…"
+                  : route
+                    ? "Refresh directions"
+                    : "Get directions"}
+              </button>
+            </article>
+          ) : (
+            <div className="flex gap-2 overflow-x-auto pb-1">
+              {visibleServices.map((service) => (
+                <button
+                  key={service.id}
+                  onClick={() => focusService(service)}
+                  className="min-h-12 shrink-0 rounded-full border bg-white/95 px-5 text-sm font-semibold shadow-lg backdrop-blur"
+                >
+                  {service.title}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  )
 }

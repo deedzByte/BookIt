@@ -1,7 +1,7 @@
 // components/dialogs/AddServiceDialog.tsx
-"use client";
+"use client"
 
-import { useState } from "react";
+import { useState } from "react"
 import {
   Dialog,
   DialogContent,
@@ -9,41 +9,46 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button"
+import { toast } from "sonner"
 
 interface AddServiceDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onAddService: (service: { name: string; isActive: boolean; category: any[] }) => void;
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onAddService: (service: {
+    name: string
+    isActive: boolean
+    category: unknown[]
+  }) => void
 }
 
 export function AddServiceDialog({
   open,
   onOpenChange,
-
+  onAddService,
 }: AddServiceDialogProps) {
-  const [name, setName] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [name, setName] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const trimmed = name.trim();
+    e.preventDefault()
+    const trimmed = name.trim()
     if (!trimmed) {
-      toast.error("Please enter a service name");
-      return;
+      toast.error("Please enter a service name")
+      return
     }
 
-    setIsLoading(true);
+    setIsLoading(true)
     setTimeout(() => {
-      setName("");
-      setIsLoading(false);
-      onOpenChange(false);
-    }, 500);
-  };
+      onAddService({ name: trimmed, isActive: true, category: [] })
+      setName("")
+      setIsLoading(false)
+      onOpenChange(false)
+    }, 500)
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -69,7 +74,11 @@ export function AddServiceDialog({
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" type="button" onClick={() => onOpenChange(false)}>
+            <Button
+              variant="outline"
+              type="button"
+              onClick={() => onOpenChange(false)}
+            >
               Cancel
             </Button>
             <Button type="submit" disabled={isLoading}>
@@ -79,5 +88,5 @@ export function AddServiceDialog({
         </form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }
