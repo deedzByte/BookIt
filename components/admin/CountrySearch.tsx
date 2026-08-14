@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import {
   Combobox,
@@ -7,7 +7,7 @@ import {
   ComboboxEmpty,
   ComboboxInput,
   ComboboxItem,
-} from "@/components/ui/combobox";
+} from "@/components/ui/combobox"
 
 const countries = [
   { code: "ar", value: "argentina", label: "Argentina" },
@@ -22,11 +22,23 @@ const countries = [
   { code: "za", value: "south-africa", label: "South Africa" },
   { code: "gb", value: "united-kingdom", label: "United Kingdom" },
   { code: "us", value: "united-states", label: "United States" },
-];
+]
 
-export default function ComboboxPopup() {
+interface CountrySearchProps {
+  value?: string
+  onValueChange?: (value: string) => void
+}
+
+export default function ComboboxPopup({
+  value,
+  onValueChange,
+}: CountrySearchProps) {
   return (
-    <Combobox items={countries}>
+    <Combobox
+      items={countries}
+      value={value}
+      onValueChange={(nextValue) => onValueChange?.(nextValue ?? "")}
+    >
       <ComboboxInput placeholder="Select your country" />
 
       <ComboboxContent>
@@ -41,5 +53,5 @@ export default function ComboboxPopup() {
         </ComboboxCollection>
       </ComboboxContent>
     </Combobox>
-  );
+  )
 }
