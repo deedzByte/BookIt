@@ -1,13 +1,5 @@
-import Hero from "@/components/Hero"
-import Providers from "@/components/FeaturedProviders"
-import HeroFooter from "@/components/HeroFooter"
+import MarketplaceHome from "@/components/marketplace/MarketplaceHome"
 
 export default function Page() {
-  return (
-    <div>
-      <Hero/>
-      <Providers/>
-      <HeroFooter/>
-    </div>
-  )
+  return <MarketplaceHome />
 }
