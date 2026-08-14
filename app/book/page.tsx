@@ -9,6 +9,7 @@ import {
   MessageCircle,
   UserRound,
 } from "lucide-react"
+import { whatsappUrl } from "@/lib/whatsapp"
 
 type BookingDraft = {
   service: string
@@ -66,7 +67,7 @@ export default function BookPage() {
 
   function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    const reference = `BI-${Date.now().toString(36).slice(-6).toUpperCase()}`
+    const reference = `BI-${draft.date.replaceAll("-", "")}-${draft.time.replace(":", "")}`
     const message = [
       "*New BookIt booking request*",
       `Reference: ${reference}`,
@@ -84,16 +85,8 @@ export default function BookPage() {
       "",
       "Please confirm availability and the final price.",
     ].join("\n")
-    const configuredNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER?.replace(
-      /\D/g,
-      ""
-    )
-    const url = configuredNumber
-      ? `https://wa.me/${configuredNumber}?text=${encodeURIComponent(message)}`
-      : `https://wa.me/?text=${encodeURIComponent(message)}`
-
     localStorage.removeItem("bookit-booking-draft")
-    window.location.assign(url)
+    window.location.assign(whatsappUrl(message))
   }
 
   const steps = [

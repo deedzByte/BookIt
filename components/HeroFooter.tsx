@@ -1,7 +1,8 @@
-import Image from "next/image";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { MessageCircle } from "lucide-react";
+import Image from "next/image"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { MessageCircle } from "lucide-react"
+import Link from "next/link"
 
 export default function FeaturedPackage() {
   return (
@@ -34,7 +35,7 @@ export default function FeaturedPackage() {
             {/* Content */}
 
             <div className="flex flex-col justify-center">
-              <Badge className="mb-6 w-fit rounded-full bg-zinc-800 px-4 py-2 uppercase tracking-widest text-zinc-300 hover:bg-zinc-800">
+              <Badge className="mb-6 w-fit rounded-full bg-zinc-800 px-4 py-2 tracking-widest text-zinc-300 uppercase hover:bg-zinc-800">
                 Top Recommendation
               </Badge>
 
@@ -43,14 +44,13 @@ export default function FeaturedPackage() {
               </h2>
 
               <p className="mt-6 max-w-lg text-lg leading-8 text-zinc-400">
-                Studio-quality lighting, a professional attendant,
-                custom backdrop, and instant digital delivery to
-                guests via WhatsApp.
+                Studio-quality lighting, a professional attendant, custom
+                backdrop, and instant digital delivery to guests via WhatsApp.
               </p>
 
               <div className="mt-10 grid grid-cols-2 gap-10">
                 <div>
-                  <p className="text-xs uppercase tracking-[0.25em] text-zinc-500">
+                  <p className="text-xs tracking-[0.25em] text-zinc-500 uppercase">
                     Provider
                   </p>
 
@@ -60,7 +60,7 @@ export default function FeaturedPackage() {
                 </div>
 
                 <div>
-                  <p className="text-xs uppercase tracking-[0.25em] text-zinc-500">
+                  <p className="text-xs tracking-[0.25em] text-zinc-500 uppercase">
                     Price
                   </p>
 
@@ -77,6 +77,7 @@ export default function FeaturedPackage() {
               <Button
                 size="lg"
                 className="mt-10 h-14 w-fit rounded-2xl bg-green-500 px-8 text-lg hover:bg-green-600"
+                render={<Link href="/book" />}
               >
                 <MessageCircle className="mr-2 h-5 w-5" />
                 Book on WhatsApp
@@ -90,5 +91,5 @@ export default function FeaturedPackage() {
         </div>
       </div>
     </section>
-  );
+  )
 }

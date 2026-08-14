@@ -12,6 +12,26 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: "#25705f",
     orientation: "portrait-primary",
     categories: ["business", "lifestyle", "shopping"],
+    shortcuts: [
+      {
+        name: "Book a service",
+        short_name: "Book",
+        url: "/book",
+        icons: [{ src: "/icon.svg", sizes: "any" }],
+      },
+      {
+        name: "Browse providers",
+        short_name: "Providers",
+        url: "/providers",
+        icons: [{ src: "/icon.svg", sizes: "any" }],
+      },
+      {
+        name: "My basket",
+        short_name: "Basket",
+        url: "/cart",
+        icons: [{ src: "/icon.svg", sizes: "any" }],
+      },
+    ],
     icons: [
       { src: "/icon.svg", sizes: "any", type: "image/svg+xml", purpose: "any" },
       {

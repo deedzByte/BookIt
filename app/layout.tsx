@@ -8,6 +8,8 @@ import Footer from "@/components/Footer"
 import { Toaster } from "@/components/ui/sonner"
 import PwaRegistrar from "@/components/PwaRegistrar"
 import { MarketplaceProvider } from "@/components/marketplace/MarketplaceProvider"
+import InstallPwaButton from "@/components/InstallPwaButton"
+import WhatsAppDock from "@/components/WhatsAppDock"
 
 // Use Outfit as your main font
 const outfit = Outfit({
@@ -24,8 +26,8 @@ const monoFont = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "SnapBook",
-    template: "%s | SnapBook",
+    default: "BookIt",
+    template: "%s | BookIt",
   },
   description:
     "Book photographers, DJs, caterers, decorators, venues and other event professionals.",
@@ -66,6 +68,8 @@ export default function RootLayout({
               <Toaster />
               <main className="flex-1">{children}</main>
               <Footer />
+              <WhatsAppDock />
+              <InstallPwaButton />
             </div>
           </MarketplaceProvider>
         </ThemeProvider>

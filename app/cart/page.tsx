@@ -4,6 +4,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { Minus, Plus, ShoppingBag, Trash2 } from "lucide-react"
 import { useMarketplace } from "@/components/marketplace/MarketplaceProvider"
+import { whatsappUrl } from "@/lib/whatsapp"
 
 export default function CartPage() {
   const { cart, changeQuantity, clearCart, addActivity } = useMarketplace()
@@ -13,7 +14,9 @@ export default function CartPage() {
   )
 
   function checkout() {
-    const reference = `BI-${cart.length}-${Math.round(subtotal * 100).toString(36).toUpperCase()}`
+    const reference = `BI-${cart.length}-${Math.round(subtotal * 100)
+      .toString(36)
+      .toUpperCase()}`
     const lines = cart.map(
       (line) =>
         `• ${line.quantity} × ${line.title} — $${(line.price * line.quantity).toFixed(2)}`
@@ -35,12 +38,7 @@ export default function CartPage() {
       total: subtotal,
       status: "sent",
     })
-    const number = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER?.replace(/\D/g, "")
-    window.location.assign(
-      number
-        ? `https://wa.me/${number}?text=${encodeURIComponent(message)}`
-        : `https://wa.me/?text=${encodeURIComponent(message)}`
-    )
+    window.location.assign(whatsappUrl(message))
   }
 
   if (!cart.length)
