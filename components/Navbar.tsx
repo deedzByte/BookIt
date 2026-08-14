@@ -2,19 +2,21 @@
 
 import Link from "next/link"
 import { useEffect, useState } from "react"
-import { Menu, X } from "lucide-react"
+import { Menu, ShoppingBag, X } from "lucide-react"
 
+import { useMarketplace } from "@/components/marketplace/MarketplaceProvider"
 import { Button } from "@/components/ui/button"
 
 const navigation = [
   { href: "/", label: "Home" },
-  { href: "/providers", label: "Providers" },
-  { href: "/categories", label: "Categories" },
-  { href: "/login", label: "Sign in" },
+  { href: "/tasks", label: "Tasks" },
+  { href: "/activity", label: "Activity" },
 ]
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const { cart } = useMarketplace()
+  const cartCount = cart.reduce((total, line) => total + line.quantity, 0)
 
   useEffect(() => {
     if (!isMenuOpen) return
@@ -50,16 +52,15 @@ export default function Navbar() {
             </Link>
           ))}
           <Link
-            href="/book"
-            className="inline-flex min-h-11 items-center rounded-full bg-[#173f36] px-6 text-sm font-semibold text-white transition hover:bg-[#245b4e] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#173f36]"
+            href="/cart"
+            className="relative inline-flex min-h-11 items-center gap-2 rounded-full bg-[#173f36] px-5 text-sm font-semibold text-white transition hover:bg-[#245b4e]"
           >
-            Book now
-          </Link>
-          <Link
-            href="/register"
-            className="inline-flex min-h-11 items-center rounded-full border border-zinc-300 px-5 text-sm font-semibold text-zinc-800 transition hover:bg-zinc-50"
-          >
-            Become a provider
+            <ShoppingBag className="size-4" /> Basket
+            {cartCount > 0 && (
+              <span className="flex min-w-5 items-center justify-center rounded-full bg-[#f5c86b] px-1.5 text-xs text-[#173f36]">
+                {cartCount}
+              </span>
+            )}
           </Link>
         </nav>
 
@@ -94,11 +95,16 @@ export default function Navbar() {
               </Link>
             ))}
             <Link
-              href="/book"
+              href="/cart"
               onClick={() => setIsMenuOpen(false)}
-              className="mt-2 flex min-h-12 items-center justify-center rounded-xl bg-[#173f36] px-4 text-base font-semibold text-white active:bg-[#245b4e]"
+              className="mt-2 flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#173f36] px-4 text-base font-semibold text-white active:bg-[#245b4e]"
             >
-              Book now
+              <ShoppingBag className="size-5" /> Basket
+              {cartCount > 0 && (
+                <span className="rounded-full bg-[#f5c86b] px-2 py-0.5 text-xs text-[#173f36]">
+                  {cartCount}
+                </span>
+              )}
             </Link>
             <Link
               href="/register"
@@ -106,6 +112,13 @@ export default function Navbar() {
               className="mt-1 flex min-h-12 items-center justify-center rounded-xl border border-zinc-300 px-4 text-base font-semibold text-zinc-800 active:bg-zinc-100"
             >
               Become a provider
+            </Link>
+            <Link
+              href="/login"
+              onClick={() => setIsMenuOpen(false)}
+              className="flex min-h-12 items-center justify-center rounded-xl px-4 text-base font-semibold text-zinc-700 active:bg-zinc-100"
+            >
+              Sign in
             </Link>
           </div>
         </nav>

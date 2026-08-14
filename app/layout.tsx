@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
 import { Toaster } from "@/components/ui/sonner"
 import PwaRegistrar from "@/components/PwaRegistrar"
+import { MarketplaceProvider } from "@/components/marketplace/MarketplaceProvider"
 
 // Use Outfit as your main font
 const outfit = Outfit({
@@ -59,12 +60,14 @@ export default function RootLayout({
       >
         <ThemeProvider defaultTheme="light" enableSystem>
           <PwaRegistrar />
-          <div className="flex min-h-screen flex-col">
-            <Navbar />
-            <Toaster />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </div>
+          <MarketplaceProvider>
+            <div className="flex min-h-screen flex-col">
+              <Navbar />
+              <Toaster />
+              <main className="flex-1">{children}</main>
+              <Footer />
+            </div>
+          </MarketplaceProvider>
         </ThemeProvider>
       </body>
     </html>

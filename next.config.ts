@@ -1,6 +1,13 @@
 import type { NextConfig } from "next"
+import { networkInterfaces } from "node:os"
+
+const localNetworkOrigins = Object.values(networkInterfaces())
+  .flatMap((connections) => connections ?? [])
+  .filter((connection) => connection.family === "IPv4" && !connection.internal)
+  .map((connection) => connection.address)
 
 const nextConfig: NextConfig = {
+  allowedDevOrigins: ["localhost", "127.0.0.1", ...localNetworkOrigins],
   async headers() {
     return [
       {
